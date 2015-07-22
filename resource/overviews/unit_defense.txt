@@ -1,0 +1,8 @@
+unit_defense
+{
+	material materials/overviews/unit_defense.vmat
+	pos_x -4288
+	pos_y 5738
+	scale 9.941
+}
+
