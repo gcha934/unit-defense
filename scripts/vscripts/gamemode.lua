@@ -10,15 +10,13 @@
     _G.GameMode = class({})
   end
 --GLOBAL VARIABLES
-START_TIME=0;
-START_SPAWN_TIME=0;
-CURRENT_ROUND=0;
-UNIT_NAME=0;
-DOWNTIME=0;
-START_DELAY=30;
-
-
-
+SPAWN_TIMER=30
+ELASPED_TIME=0
+UNIT_NAME=0
+DOWNTIME=15
+START_DELAY=10
+ROUND=0
+OFFSET=0
 
   -- This library allow for easily delayed/timed actions
   require('libraries/timers')
@@ -114,49 +112,87 @@ START_DELAY=30;
     is useful for starting any game logic timers/thinkers, beginning the first round, etc.
     ]]
     function GameMode:OnGameInProgress()
-      local repeat_interval = 5 -- Rerun this timer every *repeat_interval* game-time seconds
-      local start_after = 0 -- Start this timer *start_after* game-time seconds later
-      START_TIME=GameRules:GetGameTime();
-    --[[  Timers:CreateTimer(start_after, function()
-          SpawnCreeps()
-          print("i was called")
-          return repeat_interval
-      end)
-  --]]
+      OFFSET=GameRules:GetGameTime();
+      --since game time with 0:00
+     
+        --instructions display
+        --and timer to delay them
 
 end
 
-function GameMode.OnThink()
+function start()
 
-print("i was called")
+
 
   SpawnCreeps()
 
-return 1
+
 end
 function SpawnCreeps()
 
   --if statement for when gametime has elapsed 45 seconds
 
   if  GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-    print(START_TIME," this is current time and",START_DELAY+START_TIME)
-    if GameRules:GetGameTime()>=START_DELAY+START_TIME then
-      print(START_TIME)
 
-    local point = Entities:FindByName( nil, "spawner"):GetAbsOrigin()
-    local pos1 = Entities:FindByName( nil, "pos1")
-    --have to replace sheep with UNIT_NAME later
-    local unit = CreateUnitByName("sheep", point+RandomVector(RandomInt(100,200)), true, nil, nil, DOTA_TEAM_NEUTRALS)
-    unit:SetInitialGoalEntity(pos1)
-    end
+   
+     --info on creep spawn specific stuff
+      RoundInformation()
+      --this should hold the time at the END of the downtime
+      if GameRules:GetGameTime()>OFFSET+SPAWN_TIMER then
+        ROUND=ROUND+1
+        OFFSET=GameRules:GetGameTime()+DOWNTIME
+        return DOWNTIME
+      end
+
+      local point = Entities:FindByName( nil, "spawner"):GetAbsOrigin()
+
+
+
+      
+      local pos1 = Entities:FindByName( nil, "pos1")
+       --have to replace sheep with UNIT_NAME later
+       local unit = CreateUnitByName(UNIT_NAME, point+RandomVector(RandomInt(100,200)), true, nil, nil, DOTA_TEAM_BADGUYS)
+        unit:SetInitialGoalEntity(pos1)
   end
+
+
+
+
+
+  UnitCount()
+
 end
 
 
 
+function UnitCount()
+  -- make this player specific later and vector specific somehow
+  local originp1=Entities:FindByName(nil,"originp1"):GetAbsOrigin()
+  --need to check if this counter includes playerowned units
+  local UnitCounter = FindUnitsInRadius(DOTA_TEAM_BADGUYS,
+  originp1,
+    nil,
+    2500,
+    DOTA_UNIT_TARGET_TEAM_BOTH,
+    DOTA_UNIT_TARGET_CREEP,
+    0,
+    0,
+    false)
+  print(#UnitCounter,"number of units")
+  if #UnitCounter>50 then
+  --change this later to be player specific
+  ancient=Entities:FindByName(nil, "dota_goodguys_fort")
+  ancient:ForceKill(false);
+end
+end
 
-
-
+function RoundInformation()
+  if ROUND == 0 then
+    UNIT_NAME="sheep"
+  elseif ROUND ==1 then
+    UNIT_NAME="wolfcub"
+  end
+end
   -- This function initializes the game mode and is called before anyone loads into the game
   -- It can be used to pre-initialize any values/tables that will be needed later
   function GameMode:InitGameMode()
@@ -171,7 +207,11 @@ end
     -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
     Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
 
-    GameRules:GetGameModeEntity():SetThink( "OnThink", self, 1)
+    Timers:CreateTimer(function()
+     start()
+     return 1.0
+   end
+   )
     DebugPrint('[BAREBONES] Done loading Barebones gamemode!\n\n')
   end
 
