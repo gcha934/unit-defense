@@ -103,7 +103,7 @@
     "ModelScale"                "1"
 
     "MovementCapabilities"              "DOTA_UNIT_CAP_MOVE_GROUND"
-    "MovementSpeed"             "200"
+    "MovementSpeed"             "350"
 
     "CombatClassAttack"         "DOTA_COMBAT_CLASS_ATTACK_BASIC"
     "CombatClassDefend"         "DOTA_COMBAT_CLASS_DEFEND_BASIC"
