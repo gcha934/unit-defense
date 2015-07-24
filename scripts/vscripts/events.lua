@@ -196,14 +196,7 @@ function GameMode:OnPlayerTakeTowerDamage(keys)
 end
 
 -- A player picked a hero
-function GameMode:OnPlayerPickHero(keys)
-  DebugPrint('[BAREBONES] OnPlayerPickHero')
-  DebugPrintTable(keys)
 
-  local heroClass = keys.hero
-  local heroEntity = EntIndexToHScript(keys.heroindex)
-  local player = EntIndexToHScript(keys.player)
-end
 
 -- A player killed another player in a multi-team context
 function GameMode:OnTeamKillCredit(keys)

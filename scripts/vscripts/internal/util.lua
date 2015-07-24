@@ -57,7 +57,39 @@ function PrintTable(t, indent, done)
     end
   end
 end
+function ColorIt( sStr, sColor )
+  if sStr == nil or sColor == nil then
+    return
+  end
 
+  --Default is cyan.
+  local color = "00FFFF"
+
+  if sColor == "green" then
+    color = "ADFF2F"
+  elseif sColor == "purple" then
+    color = "EE82EE"
+  elseif sColor == "blue" then
+    color = "00BFFF"
+  elseif sColor == "orange" then
+    color = "FFA500"
+  elseif sColor == "pink" then
+    color = "DDA0DD"
+  elseif sColor == "red" then
+    color = "FF6347"
+  elseif sColor == "cyan" then
+    color = "00FFFF"
+  elseif sColor == "yellow" then
+    color = "FFFF00"
+  elseif sColor == "brown" then
+    color = "A52A2A"
+  elseif sColor == "magenta" then
+    color = "FF00FF"
+  elseif sColor == "teal" then
+    color = "008080"
+  end
+  return "<font color='#" .. color .. "'>" .. sStr .. "</font>"
+end
 -- Colors
 COLOR_NONE = '\x06'
 COLOR_GRAY = '\x06'

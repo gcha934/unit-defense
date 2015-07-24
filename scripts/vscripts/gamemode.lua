@@ -3,20 +3,28 @@
 
   -- Set this to true if you want to see a complete debug output of all events/processes done by barebones
   -- You can also change the cvar 'barebones_spew' at any time to 1 or 0 for output/no output
-  BAREBONES_DEBUG_SPEW = true 
+  BAREBONES_DEBUG_SPEW = false 
 
   if GameMode == nil then
     DebugPrint( '[BAREBONES] creating barebones game mode' )
     _G.GameMode = class({})
   end
 --GLOBAL VARIABLES
-SPAWN_TIMER=30
+SPAWN_TIMER=45
 ELASPED_TIME=0
 UNIT_NAME=0
-DOWNTIME=15
-START_DELAY=10
-ROUND=0
+DOWNTIME=10
+START_DELAY=3
+ROUND=1
 OFFSET=0
+MESSAGE_TIMER=0
+players= {}
+FIRST_ROUND=true
+
+-- Place holder till they fix the playername function
+aux_vector = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6"}
+
+
 
   -- This library allow for easily delayed/timed actions
   require('libraries/timers')
@@ -38,7 +46,22 @@ OFFSET=0
   -- events.lua is where you can specify the actions to be taken when any event occurs and is one of the core barebones files.
   require('events')
 
+function GameMode:OnPlayerPickHero(keys)
+  DebugPrint('[BAREBONES] OnPlayerPickHero')
+  DebugPrintTable(keys)
 
+    local heroClass = keys.hero
+  local heroEntity = EntIndexToHScript(keys.heroindex)
+  local player = EntIndexToHScript(keys.player)
+  local playerID = heroEntity:GetPlayerID()
+  -- Set this player's health bar color
+  local teamID = PlayerResource:GetTeam( playerID )
+  local color = TEAM_COLORS[teamID]
+  -- Add this player to the global list so we can get them later etc...
+  
+  players[playerID] = player
+  
+end
   --[[
     This function should be used to set up Async precache calls at the beginning of the gameplay.
 
@@ -52,6 +75,8 @@ OFFSET=0
     time, you can call the functions individually (for example if you want to precache units in a new wave of
     holdout).
 
+
+    
     This function should generally only be used if the Precache() function in addon_game_mode.lua is not working.
     ]]
     function GameMode:PostLoadPrecache()
@@ -112,7 +137,11 @@ OFFSET=0
     is useful for starting any game logic timers/thinkers, beginning the first round, etc.
     ]]
     function GameMode:OnGameInProgress()
-      OFFSET=GameRules:GetGameTime();
+      OFFSET=GameRules:GetGameTime()
+      --initialise unit counter display
+      
+      SpawnPlayerCount()
+
       --since game time with 0:00
      
         --instructions display
@@ -120,28 +149,45 @@ OFFSET=0
 
 end
 
+
+
+
 function start()
 
-
-
+--this gets all the players and playerid pos maybe do something with this
+for i = 1, 9 do
+        local playerId = PlayerResource:GetNthPlayerIDOnTeam(DOTA_TEAM_GOODGUYS, i)
+        
+      end
   SpawnCreeps()
 
 
 end
 function SpawnCreeps()
 
+ 
+
+
   --if statement for when gametime has elapsed 45 seconds
 
   if  GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-
-   
+    --roundinfo display
+ if FIRST_ROUND==true then
+     Timers:CreateTimer(function()
+     GameRules:SendCustomMessage("         Wave ".. ColorIt(ROUND,"red") .. " start", 0, 0)
+       FIRST_ROUND=false
+      return SPAWN_TIMER+DOWNTIME
+    end
+  )
+      end
+   if GameRules:GetGameTime()>= OFFSET then
      --info on creep spawn specific stuff
       RoundInformation()
       --this should hold the time at the END of the downtime
       if GameRules:GetGameTime()>OFFSET+SPAWN_TIMER then
         ROUND=ROUND+1
         OFFSET=GameRules:GetGameTime()+DOWNTIME
-        return DOWNTIME
+        return 1.0
       end
 
       local point = Entities:FindByName( nil, "spawner"):GetAbsOrigin()
@@ -151,8 +197,9 @@ function SpawnCreeps()
       
       local pos1 = Entities:FindByName( nil, "pos1")
        --have to replace sheep with UNIT_NAME later
-       local unit = CreateUnitByName(UNIT_NAME, point+RandomVector(RandomInt(100,200)), true, nil, nil, DOTA_TEAM_BADGUYS)
+       local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
         unit:SetInitialGoalEntity(pos1)
+      end
   end
 
 
@@ -165,34 +212,30 @@ end
 
 
 
-function UnitCount()
-  -- make this player specific later and vector specific somehow
-  local originp1=Entities:FindByName(nil,"originp1"):GetAbsOrigin()
-  --need to check if this counter includes playerowned units
-  local UnitCounter = FindUnitsInRadius(DOTA_TEAM_BADGUYS,
-  originp1,
-    nil,
-    2500,
-    DOTA_UNIT_TARGET_TEAM_BOTH,
-    DOTA_UNIT_TARGET_CREEP,
-    0,
-    0,
-    false)
-  print(#UnitCounter,"number of units")
-  if #UnitCounter>50 then
-  --change this later to be player specific
-  ancient=Entities:FindByName(nil, "dota_goodguys_fort")
-  ancient:ForceKill(false);
-end
-end
+
 
 function RoundInformation()
-  if ROUND == 0 then
+     
+        
+  if ROUND == 1 then
     UNIT_NAME="sheep"
-  elseif ROUND ==1 then
+  elseif ROUND ==2 then
     UNIT_NAME="wolfcub"
   end
 end
+
+--message and color settings
+function ShowBossMessage( msg, dur )
+  local msg = {
+  message = msg,
+  duration = dur
+}
+FireGameEvent("show_center_message",msg)
+end
+
+
+
+
   -- This function initializes the game mode and is called before anyone loads into the game
   -- It can be used to pre-initialize any values/tables that will be needed later
   function GameMode:InitGameMode()
@@ -209,11 +252,65 @@ end
 
     Timers:CreateTimer(function()
      start()
-     return 1.0
+     return 1.5
    end
    )
-    DebugPrint('[BAREBONES] Done loading Barebones gamemode!\n\n')
+end
+
+--need to figure what im doing here
+    function SpawnPlayerCount()
+      --i dont think this is what i want..
+ --[[print("is this even running")
+  if PlayerResource:GetNthPlayerIDOnTeam(DOTA_TEAM_GOODGUYS, 1)==0 then
+    self._posOne = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos1", type = 2 } )
+    print("holy shit this ran")
   end
+  if PLAYER_ARRAY[2] ~= nil then
+    self._posTwo = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos2", type = 2 } )
+  end
+  if PLAYER_ARRAY[3] ~= nil then
+    self._posThree = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos3", type = 2 } )
+  end
+  if PLAYER_ARRAY[4] ~= nil then
+    self._posFour = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos4", type = 2 } )
+  end
+  if PLAYER_ARRAY[5] ~= nil then
+    self._posFive = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos5", type = 2 } )
+  end
+  if PLAYER_ARRAY[6] ~= nil then
+    self._posSix = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos6", type = 2 } )
+  end--]]
+end
+
+function UnitCount()
+  -- make this player specific later and vector specific somehow
+  local originp1=Entities:FindByName(nil,"originp1"):GetAbsOrigin()
+  --need to check if this counter includes playerowned units
+  local UnitCounter = FindUnitsInRadius(DOTA_TEAM_BADGUYS,
+  originp1,
+    nil,
+    2500,
+    DOTA_UNIT_TARGET_TEAM_BOTH,
+    DOTA_UNIT_TARGET_CREEP,
+    0,
+    0,
+    false)
+  --print(#UnitCounter,"number of units")
+--[[
+if self._posOne~=nil then
+  print(self._posOne)
+ self._posOne:SetTextReplaceString("#UnitCounter")
+  self._posOne:SetTextReplaceValue( QUEST_TEXT_REPLACE_VALUE_CURRENT_VALUE,#UnitCounter)
+end--]]
+  if #UnitCounter>50 then
+  --change this later to be player specific
+  ancient=Entities:FindByName(nil, "dota_goodguys_fort")
+  ancient:ForceKill(false);
+  end
+end
+
+    DebugPrint('[BAREBONES] Done loading Barebones gamemode!\n\n')
+ 
 
   -- This is an example console command
   function GameMode:ExampleConsoleCommand()
