@@ -1,135 +1,205 @@
 "DOTAAbilities"
-/*{
-  //Shield
-  "item_example_item"
+{
+
+    "item_tome_of_agility"
   {
-    "ID"              "1836"
-    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
-    "AbilityUnitTargetTeam"     "DOTA_UNIT_TARGET_TEAM_ENEMY"
-    "AbilityUnitTargetType"     "DOTA_UNIT_TARGET_HERO"
-    "BaseClass"           "item_datadriven"
-    "AbilityCastAnimation"      "ACT_DOTA_DISABLED"
-    "AbilityTextureName"      "item_example_item"
-
-    // Stats
+    // General
     //-------------------------------------------------------------------------------------------------------------
-    "AbilityCastRange"        "900"
-    "AbilityCastPoint"        "0.2"
-    "AbilityCooldown"       "13.0"
-
+    "ID"              "2057"
+    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
+    "BaseClass"           "item_datadriven"
+    "AbilityTextureName"      "item_tome_of_agility"
+    
+    "Model"             "models/props_debris/merchant_debris_book001.vmdl"
+    "Effect"            "particles/econ/courier/courier_trail_international_2013/courier_international_2013.vpcf"
+  
     // Item Info
     //-------------------------------------------------------------------------------------------------------------
-    "AbilityManaCost"       "100"
-    "ItemCost"            "750"
-    "ItemInitialCharges"      "0"
-    "ItemDroppable"         "1"
-    "ItemSellable"          "1"
-    "ItemRequiresCharges"     "0"
-    "ItemShareability"        "ITEM_NOT_SHAREABLE"
-    "ItemDeclarations"        "DECLARE_PURCHASES_TO_TEAMMATES | DECLARE_PURCHASES_TO_SPECTATORS"
-    
-    "MaxUpgradeLevel"       "1"
-    "ItemBaseLevel"         "1"
-    
-    "precache"
-    {
-      "particle"              "particles/frostivus_herofx/queen_shadow_strike_linear_parent.vpcf"
-      "particle_folder"       "particles/test_particle"
-      "soundfile"             "soundevents/game_sounds_heroes/game_sounds_abaddon.vsndevts"
-    }
-    "OnSpellStart"
-    {
-      "LinearProjectile"
-      {
-        "EffectName"      "particles/frostivus_herofx/queen_shadow_strike_linear_parent.vpcf"
-        "MoveSpeed"       "%speed"
-        //"StartPosition"   "attach_attack1"
-        "FixedDistance"   "%distance"
-        "StartRadius"     "%radius"
-        "EndRadius"       "%radius"
-        "TargetTeams"     "DOTA_UNIT_TARGET_TEAM_ENEMY"
-        "TargetTypes"     "DOTA_UNIT_TARGET_HERO"
-        "TargetFlags"     "DOTA_UNIT_TARGET_FLAG_NONE"
-        "HasFrontalCone"    "0"
-        "ProvidesVision"    "0"
-        "VisionRadius"      "0"
-      }
-      "FireSound"
-      {
-        "EffectName"    "Hero_Abaddon.AphoticShield.Cast"
-        "Target"        "CASTER"
-      }
-      "ApplyModifier"
-      {
-        "Target"      "CASTER"
-        "ModifierName"  "modifier_item_shield"
-      }
-    }
-    
-    "OnProjectileHitUnit"
-    {     
-      "DeleteOnHit" "0"
-      "Damage"
-      {
-        "Target"      "TARGET"
-        "Type"    "DAMAGE_TYPE_PURE"
-        "Damage"  "%damage"
-      }
-    }
-    
-    "Modifiers"
-    {
-      "modifier_item_shield"
-      {
-        "EffectName"    "particles/test_particle/damage_immunity.vpcf"
-        "EffectAttachType"  "follow_origin"
-        "Target"      "CASTER"
-        
-        "Duration" "%duration"
-        "TextureName" "abaddon_aphotic_shield"
-        "Properties"
-        {
-          "MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE"    "%damage_reduction"
-        }
-      }
-    }
-    
-    // Special  
-    //-------------------------------------------------------------------------------------------------------------
+    //"ItemCost"            "0"
+    "ItemShopTags"          "consumable"
+    "ItemQuality"         "consumable"
+    "ItemStackable"         "1"
+    "ItemKillable"          "1"
+    "ItemPurchasable"       "1"
+    "ItemShareability"        "ITEM_FULLY_SHAREABLE_STACKING"
+    "ItemPermanent"         "0"
+    "ItemInitialCharges"      "1"
+    "SideShop"            "0"
+    "SecretShop" "0"
+  
     "AbilitySpecial"
     {
       "01"
       {
-        "var_type"        "FIELD_FLOAT"
-        "duration"        "4.0"
+        "var_type"    "FIELD_INTEGER"
+        "bonus_stat"  "1"
       }
+    }
+    
+    "ItemCastOnPickup"        "1"
+    "OnSpellStart"
+    {
+      "SpendCharge"
+      {}
+      "RunScript"
+      {
+        "ScriptFile"      "scripts/vscripts/items.lua"
+        "Function"        "AgilityTomeUsed"
+        "bonus_stat"  "%bonus_stat"
+      }
+      "FireSound"
+      {
+        "EffectName"      "DOTA_Item.Refresher.Activate"
+        "Target"        "CASTER"
+      }
+  
       
-      "02"
+    }
+  
+    "Modifiers"
+    {
+      "tome_agility_modifier"
       {
-        "var_type"        "FIELD_INTEGER"
-        "damage_reduction"    "-50"
-      }
-      "03"
-      {
-        "var_type"        "FIELD_INTEGER"
-        "radius"          "150"
-      }
-      "04"
-      {
-        "var_type"        "FIELD_INTEGER"
-        "speed"           "1800"
-      }
-      "05"
-      {
-        "var_type"        "FIELD_FLOAT"
-        "distance"        "900"
-      }
-      "06"
-      {
-        "var_type"        "FIELD_INTEGER"
-        "damage"          "125"
+        "Attributes"  "MODIFIER_ATTRIBUTE_PERMANENT"
+        "IsBuff"    "1"
+        "TextureName" "item_tome_of_agility"
+       
       }
     }
   }
+  "item_tome_of_intellect"
+  {
+    // General
+    //-------------------------------------------------------------------------------------------------------------
+    "ID"              "2054"  
+    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
+    "BaseClass"           "item_datadriven"
+    "AbilityTextureName"      "item_tome_of_intellect"
+    
+    "Model"             "models/props_debris/merchant_debris_book001.vmdl"
+    "Effect"            "particles/econ/courier/courier_roshan_frost/courier_roshan_frost_ambient.vpcf"
+    
+    // Item Info
+    //-------------------------------------------------------------------------------------------------------------
+    //"ItemCost"            "0"
+    "ItemShopTags"          "consumable"
+    "ItemQuality"         "consumable"
+    "ItemStackable"         "1"
+    "ItemKillable"          "1"
+    "ItemPurchasable"       "1"
+    "ItemShareability"        "ITEM_FULLY_SHAREABLE_STACKING"
+    "ItemPermanent"         "0"
+    "ItemInitialCharges"      "1"
+    "SideShop"            "0"
+    "SecretShop" "0"
+  
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"    "FIELD_INTEGER"
+        "bonus_stat"  "1"
+      }
+    }
+    
+    "ItemCastOnPickup"        "1"
+    "OnSpellStart"
+    {
+      "SpendCharge"
+      {}
+      "RunScript"
+      {
+        "ScriptFile"      "scripts/vscripts/items.lua"
+        "Function"        "IntellectTomeUsed"
+        "bonus_stat"  "%bonus_stat"
+      }
+      "FireSound"
+      {
+        "EffectName"      "DOTA_Item.Refresher.Activate"
+        "Target"        "CASTER"
+      }
+      
+    }
+    "Modifiers"
+      {
+      "tome_intelect_modifier"
+        {
+        "Attributes"  "MODIFIER_ATTRIBUTE_PERMANENT"
+        "IsBuff"  "1"
+        "TextureName" "item_tome_of_intellect"
+        "Properties"
+        
+        }
+      }
+  }
+  "item_tome_of_strength"
+  {
+    // General
+    //-------------------------------------------------------------------------------------------------------------
+    "ID"              "2052"
+    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
+    "BaseClass"           "item_datadriven"
+    "AbilityTextureName"      "item_tome_of_strength"
+    
+    "Model"             "models/props_debris/merchant_debris_book001.vmdl"
+    "Effect"            "particles/econ/courier/courier_greevil_orange/courier_greevil_orange_ambient_3.vpcf"
+    
+    // Item Info
+    //-------------------------------------------------------------------------------------------------------------
+    //"ItemCost"            "0"
+    "ItemShopTags"          "consumable"
+    "ItemQuality"         "consumable"
+    "ItemStackable"         "1"
+    "ItemKillable"          "1"
+    "ItemPurchasable"       "1"
+    "ItemShareability"        "ITEM_FULLY_SHAREABLE_STACKING"
+    "ItemPermanent"         "0"
+    "ItemInitialCharges"      "1"
+    "SideShop"            "0"
+    "SecretShop" "0"
+  
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"    "FIELD_INTEGER"
+        "bonus_stat"  "1"
+      }
+    }
+    
+    "ItemCastOnPickup"        "1"
+    "OnSpellStart"
+    {
+      "SpendCharge"
+      {}  
+      "RunScript"
+      {
+        "ScriptFile"      "scripts/vscripts/items.lua"
+        "Function"        "StrengthTomeUsed"
+        "bonus_stat"  "%bonus_stat"
+      }
+      "FireSound"
+      {
+        "EffectName"      "DOTA_Item.Refresher.Activate"
+        "Target"        "CASTER"
+      }
+          
+    }
+  
+    "Modifiers"
+      {
+      "tome_strenght_modifier"
+        {
+        "Attributes"  "MODIFIER_ATTRIBUTE_PERMANENT"
+        "IsBuff"  "1"
+        "TextureName" "item_tome_of_strength"
+    
+        }
+      }
+  }
+
+
+
+ 
+
 }
-*/

@@ -236,6 +236,12 @@ function GameMode:OnEntityKilled( keys )
   local damagebits = keys.damagebits -- This might always be 0 and therefore useless
 
   -- Put code here to handle when an entity gets killed
+
+  local kill_alert =
+          {
+            hero_id = killerEntity:GetClassname()
+          }
+        CustomGameEventManager:Send_ServerToAllClients( "kill_alert", kill_alert )
 end
 
 

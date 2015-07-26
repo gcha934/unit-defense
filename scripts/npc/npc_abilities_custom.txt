@@ -4,273 +4,716 @@
 {
   "Version"   "1"
   
-  "example_ability"
-  {
-    "ID"              "1852"
-    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_CHANNELLED"
-    "BaseClass"           "ability_datadriven"
-    "AbilityTextureName"      "holdout_blade_fury"
 
+"increase_strength"
+  {
+      // General
+      //-------------------------------------------------------------------------------------------------------------
+      "BaseClass"              "ability_datadriven"
+      "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+      "AbilityTextureName"     "brewmaster_drunken_haze"
+    
+    "MaxLevel"               "1" 
+    "AbilityGoldCost"  "10"
+    "AbilityCooldown"   "0"
     // Stats
     //-------------------------------------------------------------------------------------------------------------
-    "AbilityCastRange"        "1000"
-    "AbilityCastPoint"        "0.0"
-    "AbilityCooldown"       "10.0"
-    "AbilityChannelTime"      "2.0 1.8 1.6 1.5"
-    "AbilityUnitDamageType"     "DAMAGE_TYPE_PURE"
-    "AbilityCastAnimation"      "ACT_DOTA_DISABLED"
-    "AbilityDamage"         "400 600 800 1000"
     
-    "precache"
-    {
-      "particle"          "particles/econ/generic/generic_aoe_explosion_sphere_1/generic_aoe_explosion_sphere_1.vpcf"
-      "soundfile"         "soundevents/game_sounds_heroes/game_sounds_gyrocopter.vsndevts"
-    }
-
-    // Item Info
-    //-------------------------------------------------------------------------------------------------------------
-    "AbilityManaCost"       "300"
-    "SideShop"            "1"
-    
-    "OnSpellStart"
-    {
-      "ApplyModifier"
-      {
-        "Target"    "CASTER"
-        "ModifierName"  "modifier_channel_start"
-      }
-      "FireSound"
-      {
-        "EffectName"    "Hero_Gyrocopter.CallDown.Fire"
-        "Target"      "CASTER"
-      }
-    }
-    
-    "OnChannelSucceeded"
-    {
-      "RemoveModifier"
-      {
-        "Target"        "CASTER"
-        "ModifierName"      "modifier_channel_start"
-      }
-      "AttachEffect"
-      {
-        "EffectName"      "particles/econ/generic/generic_aoe_explosion_sphere_1/generic_aoe_explosion_sphere_1.vpcf"
-        "EffectAttachType"    "follow_origin"
-        "EffectRadius"      "%radius"
-        "EffectDurationScale" "1"
-        "EffectLifeDurationScale" "1"
-        "EffectColorA"      "255 0 0"
-        "EffectColorB"      "255 0 0"
-        "Target"      "CASTER"
-      }
-      
-      "Damage"
-      {
-        "Type"          "DAMAGE_TYPE_PURE"
-        "Damage"        "%damage"
-        "Target"
-        {
-          "Center"      "CASTER"
-          "Radius"      "%radius"
-          "Teams"       "DOTA_UNIT_TARGET_TEAM_ENEMY"
-          "Types"       "DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_BASIC"
-        }
-      }
-      
-      "Knockback"
-      {
-        "Center"  "CASTER"
-        "Target"
-        {
-          "Center"  "CASTER"
-          "Radius"  "%radius"
-          "Teams"   "DOTA_UNIT_TARGET_TEAM_ENEMY"
-        }
-        "Duration"  "%duration"
-        "Distance"  "%distance"
-        "Height"  "%height"
-      }
-      
-      "FireSound"
-      {
-        "EffectName"    "Hero_Gyrocopter.CallDown.Damage"
-        "Target"      "CASTER"
-      }
-    }
-    
-    "OnChannelFinish"
-    {
-      "RemoveModifier"
-      {
-        "Target"        "CASTER"
-        "ModifierName"      "modifier_channel_start"
-      }
-    }
-    
-    "OnChannelInterrupted"
-    {
-      "RemoveModifier"
-      {
-        "Target"    "CASTER"
-        "ModifierName"  "modifier_channel_start"
-      }
-    }
-    
-    "Modifiers"
-    {
-      "modifier_channel_start"
-      {
-        "OnCreated"
-        {
-          "AttachEffect"
-          {
-            "IsHidden" "1"
-            "EffectName"    "particles/test_particle/channel_field_2.vpcf"//"gyro_calldown_marker_c"//"gyrocopter_call_down"
-            "EffectAttachType"  "follow_origin"
-            "Target"      "CASTER"
-            
-            "EffectRadius"      "%radius"
-            "EffectColorA"      "255 0 0"
-            "EffectColorB"      "255 0 0"
-          
-            "ControlPoints"
-            {
-              "00"    "50 100 5"
-            }
-          }
-        }
-      }
-    }
-    
-    // Special  
-    //-------------------------------------------------------------------------------------------------------------
+ 
+  
     "AbilitySpecial"
     {
       "01"
       {
-        "var_type"        "FIELD_FLOAT"
-        "duration"        "0.5"
+        "var_type"              "FIELD_INTEGER"
+        "bonus_strength"           "1"
       }
-      
-      "02"
+        "02"
       {
-        "var_type"        "FIELD_INTEGER"
-        "damage"        "400 600 800 1000"
+        "var_type"          "FIELD_FLOAT"
+        "trueshot_ranged_damage"  "100"
       }
       
+      // extra variable
       "03"
       {
-        "var_type"        "FIELD_INTEGER"
-        "radius"        "550 550 600 650"
-      }
-      
-      "04"
-      {
-        "var_type"        "FIELD_INTEGER"
-        "distance"        "400 500 600 700"
-      }
-      
-      "05"
-      {
-        "var_type"        "FIELD_INTEGER"
-        "height"        "100 200 300 400"
+        "var_type"          "FIELD_INTEGER"
+        "global_radius"       "3000"
       }
     }
-  }
-  
-//-------------------
-// Dummy stuff
-//-------------------
-  
-  "dummy_unit"
-  {
-    "AbilityBehavior"     "DOTA_ABILITY_BEHAVIOR_PASSIVE"
-    "BaseClass"           "ability_datadriven"
-    "AbilityTextureName"            "rubick_empty1"
-    "MaxLevel"                      "1"
-    
-    "Modifiers"
+      
+    // Casting
+    //-------------------------------------------------------------------------------------------------------------
+    "OnSpellStart"
     {
-      "dummy_unit"
+     "ApplyModifier"
       {
-          "Passive"                        "1"
-          "IsHidden"                        "1"    
-          "States"
+       "ModifierName"   "modifier_increase_strength"
+       "Target"         "CASTER"
+    
+      }
+
+    }
+    
+    "precache"
+    {
+    "particle"  "particles/units/heroes/hero_brewmaster/brewmaster_drunken_haze_debuff.vpcf"
+    }
+      
+      // Modifiers
+      //-------------------------------------------------------------------------------------------------------------
+      "Modifiers"
+    {
+      "modifier_increase_strength"
+      {
+        "IsHidden"      "1"
+        "Attributes"       "MODIFIER_ATTRIBUTE_MULTIPLE" 
+        "Properties"
+        {
+       
+        "MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"      "%bonus_strength"
+         
+         }
+      }
+
+       "modifier_trueshot_aura_strength_datadriven"
+      {
+        "Passive"       "1"
+        "IsPurgable"      "0"
+        "IsHidden"        "0"
+        
+        "Aura"          "modifier_trueshot_effect_strength_datadriven"
+        "Aura_Radius"     "%global_radius"
+        "Aura_Teams"      "DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+        "Aura_Types"      "DOTA_UNIT_TARGET_HERO"
+     
+      }
+      
+      "modifier_trueshot_effect_strength_datadriven"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"
+        
+        "OnCreated"
+        {
+          "RunScript"
           {
-              "MODIFIER_STATE_UNSELECTABLE" "MODIFIER_STATE_VALUE_ENABLED"
-              "MODIFIER_STATE_INVULNERABLE"    "MODIFIER_STATE_VALUE_ENABLED"
-              "MODIFIER_STATE_NOT_ON_MINIMAP" "MODIFIER_STATE_VALUE_ENABLED"
-              "MODIFIER_STATE_NO_HEALTH_BAR"  "MODIFIER_STATE_VALUE_ENABLED"
+            "ScriptFile"  "scripts/vscripts/abilities.lua"
+            "Function"    "trueshot_initialize_strength"
           }
+        }
+      }
+    
+      // Bit Modifiers
+      "modifier_trueshot_damage_strength_mod_1"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "1"
+        }
+      }
+      
+      "modifier_trueshot_damage_strength_mod_2"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "2"
+        }
+      }
+      "modifier_trueshot_damage_strength_mod_4"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "4"
+        }
+      }
+      "modifier_trueshot_damage_strength_mod_8"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "8"
+        }
+      }
+      "modifier_trueshot_damage_strength_mod_16"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "16"
+        }
+      }
+      "modifier_trueshot_damage_strength_mod_32"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "32"
+        }
+      }
+      "modifier_trueshot_damage_strength_mod_64"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "64"
+        }
+      }
+      "modifier_trueshot_damage_strength_mod_128"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "128"
+        }
+      }
+      "modifier_trueshot_damage_strength_mod_256"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "256"
+        }
+      }
+      "modifier_trueshot_damage_strength_mod_512"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "512"
+        }
       }
     }
   }
   
-  "barebones_empty1"
+
+
+"increase_agility"
   {
-    // General
+      // General
+      //-------------------------------------------------------------------------------------------------------------
+      "BaseClass"              "ability_datadriven"
+      "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+      "AbilityTextureName"     "brewmaster_drunken_haze"
+    
+    "MaxLevel"               "1" 
+    "AbilityGoldCost"  "10"
+    "AbilityCooldown"   "0"
+    // Stats
     //-------------------------------------------------------------------------------------------------------------
-    //"ID"              "5343"                            // unique ID number for this ability.  Do not change this once established or it will invalidate collected stats.
-    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-    "MaxLevel"            "0"
-    "BaseClass"           "ability_datadriven"
-    "AbilityTextureName"            "rubick_empty1"
-  }
+    
+ 
   
-  "barebones_empty2"
-  {
-    // General
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"              "FIELD_INTEGER"
+        "bonus_agility"           "1"
+      }
+        "02"
+      {
+        "var_type"          "FIELD_FLOAT"
+        "trueshot_ranged_damage"  "100"
+      }
+      
+      // extra variable
+      "03"
+      {
+        "var_type"          "FIELD_INTEGER"
+        "global_radius"       "3000"
+      }
+    }
+      
+    // Casting
     //-------------------------------------------------------------------------------------------------------------
-    //"ID"              "5343"                            // unique ID number for this ability.  Do not change this once established or it will invalidate collected stats.
-    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-    "MaxLevel"            "0"
-    "BaseClass"           "ability_datadriven"
-    "AbilityTextureName"            "rubick_empty1"
+    "OnSpellStart"
+    {
+     "ApplyModifier"
+      {
+       "ModifierName"   "modifier_increase_agility"
+       "Target"         "CASTER"
+    
+      }
+
+    }
+    
+    "precache"
+    {
+    "particle"  "particles/units/heroes/hero_brewmaster/brewmaster_drunken_haze_debuff.vpcf"
+    }
+      
+      // Modifiers
+      //-------------------------------------------------------------------------------------------------------------
+      "Modifiers"
+    {
+      "modifier_increase_agility"
+      {
+        "IsHidden"      "1"
+        "Attributes"       "MODIFIER_ATTRIBUTE_MULTIPLE" 
+        "Properties"
+        {
+       
+        "MODIFIER_PROPERTY_STATS_AGILITY_BONUS"      "%bonus_agility"
+         
+         }
+      }
+
+       "modifier_trueshot_aura_agility_datadriven"
+      {
+        "Passive"       "1"
+        "IsPurgable"      "0"
+        "IsHidden"        "0"
+        
+        "Aura"          "modifier_trueshot_effect_agility_datadriven"
+        "Aura_Radius"     "%global_radius"
+        "Aura_Teams"      "DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+        "Aura_Types"      "DOTA_UNIT_TARGET_HERO"
+     
+      }
+      
+      "modifier_trueshot_effect_agility_datadriven"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"
+        
+        "OnCreated"
+        {
+          "RunScript"
+          {
+            "ScriptFile"  "scripts/vscripts/abilities.lua"
+            "Function"    "trueshot_initialize_agility"
+          }
+        }
+      }
+    
+      // Bit Modifiers
+      "modifier_trueshot_damage_agility_mod_1"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "1"
+        }
+      }
+      
+      "modifier_trueshot_damage_agility_mod_2"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "2"
+        }
+      }
+      "modifier_trueshot_damage_agility_mod_4"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "4"
+        }
+      }
+      "modifier_trueshot_damage_agility_mod_8"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "8"
+        }
+      }
+      "modifier_trueshot_damage_agility_mod_16"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "16"
+        }
+      }
+      "modifier_trueshot_damage_agility_mod_32"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "32"
+        }
+      }
+      "modifier_trueshot_damage_agility_mod_64"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "64"
+        }
+      }
+      "modifier_trueshot_damage_agility_mod_128"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "128"
+        }
+      }
+      "modifier_trueshot_damage_agility_mod_256"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "256"
+        }
+      }
+      "modifier_trueshot_damage_agility_mod_512"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "512"
+        }
+      }
+    }
   }
-  
-  "barebones_empty3"
+
+  "increase_intellect"
   {
-    // General
+      // General
+      //-------------------------------------------------------------------------------------------------------------
+      "BaseClass"              "ability_datadriven"
+      "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+      "AbilityTextureName"     "brewmaster_drunken_haze"
+    
+    "MaxLevel"               "1" 
+    "AbilityGoldCost"  "10"
+    "AbilityCooldown"   "0"
+    // Stats
     //-------------------------------------------------------------------------------------------------------------
-    //"ID"              "5343"                            // unique ID number for this ability.  Do not change this once established or it will invalidate collected stats.
-    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-    "MaxLevel"            "0"
-    "BaseClass"           "ability_datadriven"
-    "AbilityTextureName"            "rubick_empty1"
+    
+ 
+  
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"              "FIELD_INTEGER"
+        "bonus_intellect"           "1"
+      }
+        "02"
+      {
+        "var_type"          "FIELD_FLOAT"
+        "trueshot_ranged_damage"  "100"
+      }
+      
+      // extra variable
+      "03"
+      {
+        "var_type"          "FIELD_INTEGER"
+        "global_radius"       "3000"
+      }
+    }
+      
+    // Casting
+    //-------------------------------------------------------------------------------------------------------------
+    "OnSpellStart"
+    {
+     "ApplyModifier"
+      {
+       "ModifierName"   "modifier_increase_intellect"
+       "Target"         "CASTER"
+    
+      }
+
+    }
+    
+    "precache"
+    {
+    "particle"  "particles/units/heroes/hero_brewmaster/brewmaster_drunken_haze_debuff.vpcf"
+    }
+      
+      // Modifiers
+      //-------------------------------------------------------------------------------------------------------------
+      "Modifiers"
+    {
+      "modifier_increase_intellect"
+      {
+        "IsHidden"      "1"
+        "Attributes"       "MODIFIER_ATTRIBUTE_MULTIPLE" 
+        "Properties"
+        {
+       
+        "MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"      "%bonus_intellect"
+         
+         }
+      }
+
+       "modifier_trueshot_aura_intellect_datadriven"
+      {
+        "Passive"       "1"
+        "IsPurgable"      "0"
+        "IsHidden"        "0"
+        
+        "Aura"          "modifier_trueshot_effect_intellect_datadriven"
+        "Aura_Radius"     "%global_radius"
+        "Aura_Teams"      "DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+        "Aura_Types"      "DOTA_UNIT_TARGET_HERO"
+     
+      }
+      
+      "modifier_trueshot_effect_intellect_datadriven"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"
+        
+        "OnCreated"
+        {
+          "RunScript"
+          {
+            "ScriptFile"  "scripts/vscripts/abilities.lua"
+            "Function"    "trueshot_initialize_intellect"
+          }
+        }
+      }
+    
+      // Bit Modifiers
+      "modifier_trueshot_damage_intellect_mod_1"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "1"
+        }
+      }
+      
+      "modifier_trueshot_damage_intellect_mod_2"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "2"
+        }
+      }
+      "modifier_trueshot_damage_intellect_mod_4"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "4"
+        }
+      }
+      "modifier_trueshot_damage_intellect_mod_8"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "8"
+        }
+      }
+      "modifier_trueshot_damage_intellect_mod_16"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "16"
+        }
+      }
+      "modifier_trueshot_damage_intellect_mod_32"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "32"
+        }
+      }
+      "modifier_trueshot_damage_intellect_mod_64"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "64"
+        }
+      }
+      "modifier_trueshot_damage_intellect_mod_128"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "128"
+        }
+      }
+      "modifier_trueshot_damage_intellect_mod_256"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "256"
+        }
+      }
+      "modifier_trueshot_damage_intellect_mod_512"
+      {
+        "IsPurgable"      "0"
+        "IsHidden"        "1"  
+        "Attributes"      "MODIFIER_ATTRIBUTE_MULTIPLE"  
+        "Properties"
+        {
+          "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"  "512"
+        }
+      }
+    }
   }
-  
-  "barebones_empty4"
+
+
+  "Spawn_Unit"
   {
     // General
     //-------------------------------------------------------------------------------------------------------------
-    //"ID"              "5343"                            // unique ID number for this ability.  Do not change this once established or it will invalidate collected stats.
-    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-    "MaxLevel"            "0"
-    "BaseClass"           "ability_datadriven"
-    "AbilityTextureName"            "rubick_empty1"
+    "BaseClass"       "ability_datadriven"
+    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    "AbilityTextureName"      "furion_force_of_nature"
+    
+    // Stats
+    //-------------------------------------------------------------------------------------------------------------
+    "AbilityCastRange"        "0"
+    "AbilityCastPoint"        "0"
+    "AbilityCooldown"       "0"
+    "AbilityManaCost"       "0"
+    "AbilityGoldCost"     "10"
+    "MaxLevel"             "1"    
+    // Special
+    //-------------------------------------------------------------------------------------------------------------
+   
+  
+  
+    "precache"
+    {
+      "particle"  "particles/units/heroes/hero_furion/furion_force_of_nature_cast.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_furion.vsndevts"
+      "model"   "models/heroes/furion/treant.vmdl"
+    }
+  
+  
+  
+    "OnSpellStart"
+    {   
+      "RunScript"
+      {
+        "ScriptFile"  "scripts/vscripts/abilities.lua"
+        "Function"    "SpawnUnit"
+        "UnitName"    "sheep"
+      } 
+  
+      "FireSound"
+      {
+        "EffectName"  "Hero_Furion.ForceOfNature"
+        "Target"    "CASTER"
+      }                 
+    }
+
   }
-  
-  "barebones_empty5"
+    "Spawn_Super_Unit"
   {
     // General
     //-------------------------------------------------------------------------------------------------------------
-    //"ID"              "5343"                            // unique ID number for this ability.  Do not change this once established or it will invalidate collected stats.
-    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-    "MaxLevel"            "0"
-    "BaseClass"           "ability_datadriven"
-    "AbilityTextureName"            "rubick_empty1"
-  }
-  
-  "barebones_empty6"
-  {
-    // General
+    "BaseClass"       "ability_datadriven"
+    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    "AbilityTextureName"      "furion_force_of_nature"
+    
+    // Stats
     //-------------------------------------------------------------------------------------------------------------
-    //"ID"              "5343"                            // unique ID number for this ability.  Do not change this once established or it will invalidate collected stats.
-    "AbilityBehavior"       "DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-    "MaxLevel"            "0"
-    "BaseClass"           "ability_datadriven"
-    "AbilityTextureName"            "rubick_empty1"
+    "AbilityCastRange"        "0"
+    "AbilityCastPoint"        "0"
+    "AbilityCooldown"       "0"
+    "AbilityManaCost"       "0"
+    "AbilityGoldCost"     "100"
+    "MaxLevel"             "1"    
+    // Special
+    //-------------------------------------------------------------------------------------------------------------
+   
+  
+  
+    "precache"
+    {
+      "particle"  "particles/units/heroes/hero_furion/furion_force_of_nature_cast.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_furion.vsndevts"
+      "model"   "models/heroes/furion/treant.vmdl"
+    }
+  
+  
+  
+    "OnSpellStart"
+    {   
+      "RunScript"
+      {
+        "ScriptFile"  "scripts/vscripts/abilities.lua"
+        "Function"    "SpawnSuperUnit"
+        "UnitName"    "sheep"
+      } 
+  
+      "FireSound"
+      {
+        "EffectName"  "Hero_Furion.ForceOfNature"
+        "Target"    "CASTER"
+      }                 
+    }
+
   }
 }
+
 

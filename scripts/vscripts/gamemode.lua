@@ -3,7 +3,7 @@
 
   -- Set this to true if you want to see a complete debug output of all events/processes done by barebones
   -- You can also change the cvar 'barebones_spew' at any time to 1 or 0 for output/no output
-  BAREBONES_DEBUG_SPEW = false 
+  BAREBONES_DEBUG_SPEW = true
 
   if GameMode == nil then
     DebugPrint( '[BAREBONES] creating barebones game mode' )
@@ -45,7 +45,8 @@ aux_vector = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Playe
   require('settings')
   -- events.lua is where you can specify the actions to be taken when any event occurs and is one of the core barebones files.
   require('events')
-
+  require('abilities')
+  require('popups')
 function GameMode:OnPlayerPickHero(keys)
   DebugPrint('[BAREBONES] OnPlayerPickHero')
   DebugPrintTable(keys)
@@ -58,7 +59,7 @@ function GameMode:OnPlayerPickHero(keys)
   local teamID = PlayerResource:GetTeam( playerID )
   local color = TEAM_COLORS[teamID]
   -- Add this player to the global list so we can get them later etc...
-  
+    heroEntity:SetGold(500, false)
   players[playerID] = player
   
 end
@@ -115,7 +116,7 @@ end
       DebugPrint("[BAREBONES] Hero spawned in game for first time -- " .. hero:GetUnitName())
 
     -- This line for example will set the starting gold of every hero to 500 unreliable gold
-    hero:SetGold(500, false)
+  
 
     -- These lines will create an item and add it to the player, effectively ensuring they start with the item
     --local item = CreateItem("item_example_item", hero, hero)
@@ -140,7 +141,7 @@ end
       OFFSET=GameRules:GetGameTime()
       --initialise unit counter display
       
-      SpawnPlayerCount()
+     
 
       --since game time with 0:00
      
@@ -153,13 +154,16 @@ end
 
 
 function start()
-
+local originp1=Entities:FindByName(nil,"originp1"):GetAbsOrigin()
 --this gets all the players and playerid pos maybe do something with this
-for i = 1, 9 do
-        local playerId = PlayerResource:GetNthPlayerIDOnTeam(DOTA_TEAM_GOODGUYS, i)
-        
+for i = 0, 8 do
+      if players[i]~=nill then
+     players[i]:GetAssignedHero():SetOrigin(originp1)
+      end
       end
   SpawnCreeps()
+
+--restrict hero movement
 
 
 end
@@ -257,51 +261,29 @@ end
    )
 end
 
---need to figure what im doing here
-    function SpawnPlayerCount()
-      --i dont think this is what i want..
- --[[print("is this even running")
-  if PlayerResource:GetNthPlayerIDOnTeam(DOTA_TEAM_GOODGUYS, 1)==0 then
-    self._posOne = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos1", type = 2 } )
-    print("holy shit this ran")
-  end
-  if PLAYER_ARRAY[2] ~= nil then
-    self._posTwo = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos2", type = 2 } )
-  end
-  if PLAYER_ARRAY[3] ~= nil then
-    self._posThree = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos3", type = 2 } )
-  end
-  if PLAYER_ARRAY[4] ~= nil then
-    self._posFour = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos4", type = 2 } )
-  end
-  if PLAYER_ARRAY[5] ~= nil then
-    self._posFive = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos5", type = 2 } )
-  end
-  if PLAYER_ARRAY[6] ~= nil then
-    self._posSix = SpawnEntityFromTableSynchronous( "quest", { name = "Player", title = "#DOTA_Quest_Pos6", type = 2 } )
-  end--]]
-end
+
 
 function UnitCount()
   -- make this player specific later and vector specific somehow
   local originp1=Entities:FindByName(nil,"originp1"):GetAbsOrigin()
   --need to check if this counter includes playerowned units
-  local UnitCounter = FindUnitsInRadius(DOTA_TEAM_BADGUYS,
+  local UnitCounter = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
   originp1,
     nil,
     2500,
-    DOTA_UNIT_TARGET_TEAM_BOTH,
+    DOTA_UNIT_TARGET_TEAM_ENEMY,
     DOTA_UNIT_TARGET_CREEP,
     0,
     0,
     false)
-  --print(#UnitCounter,"number of units")
+  print(#UnitCounter,"number of units")
 --[[
 if self._posOne~=nil then
   print(self._posOne)
  self._posOne:SetTextReplaceString("#UnitCounter")
   self._posOne:SetTextReplaceValue( QUEST_TEXT_REPLACE_VALUE_CURRENT_VALUE,#UnitCounter)
 end--]]
+
   if #UnitCounter>50 then
   --change this later to be player specific
   ancient=Entities:FindByName(nil, "dota_goodguys_fort")

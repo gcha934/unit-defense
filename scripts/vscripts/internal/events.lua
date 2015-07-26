@@ -40,10 +40,20 @@ end
 function GameMode:_OnNPCSpawned(keys)
   local npc = EntIndexToHScript(keys.entindex)
 
-  if npc:IsRealHero() and npc.bFirstSpawned == nil then
-    npc.bFirstSpawned = true
+ 
+        for i=0,15 do
+            local ability = npc:GetAbilityByIndex(i)
+            if ability then
+                ability:SetLevel(ability:GetMaxLevel())
+            end
+        end
+  
+
+
+
+
     GameMode:OnHeroInGame(npc)
-  end
+ 
 end
 
 -- An entity died
