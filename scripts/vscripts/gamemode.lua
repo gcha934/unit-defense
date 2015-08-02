@@ -20,6 +20,9 @@ OFFSET=0
 MESSAGE_TIMER=0
 players= {}
 FIRST_ROUND=true
+MAX_CREEPS=60
+pregame=true
+BOSS_SPAWN_CHECK=false
 
 -- Place holder till they fix the playername function
 aux_vector = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6"}
@@ -47,21 +50,41 @@ aux_vector = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Playe
   require('events')
   require('abilities')
   require('popups')
-function GameMode:OnPlayerPickHero(keys)
-  DebugPrint('[BAREBONES] OnPlayerPickHero')
-  DebugPrintTable(keys)
+  function GameMode:OnPlayerPickHero(keys)
+    DebugPrint('[BAREBONES] OnPlayerPickHero')
+    DebugPrintTable(keys)
 
     local heroClass = keys.hero
-  local heroEntity = EntIndexToHScript(keys.heroindex)
-  local player = EntIndexToHScript(keys.player)
-  local playerID = heroEntity:GetPlayerID()
+    local hero = EntIndexToHScript(keys.heroindex)
+    local player = EntIndexToHScript(keys.player)
+    local playerID = hero:GetPlayerID()
   -- Set this player's health bar color
   local teamID = PlayerResource:GetTeam( playerID )
   local color = TEAM_COLORS[teamID]
   -- Add this player to the global list so we can get them later etc...
-    heroEntity:SetGold(500, false)
-  players[playerID] = player
+  hero:SetGold(500, false)
+  players[playerID] = playerID
   
+  if playerID==0 then
+
+    hero:SetOrigin(originp1)
+    hero:SetRespawnsDisabled(true)
+    hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+  elseif playerID==1 then
+   hero:SetRespawnsDisabled(true)
+   hero:SetOrigin(originp2)
+   hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+ elseif playerID==2 then
+  hero:SetRespawnsDisabled(true)
+  hero:SetOrigin(originp3)
+  hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+elseif playerID==3 then
+  hero:SetRespawnsDisabled(true)
+  hero:SetOrigin(originp4)
+  hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+end
+
+
 end
   --[[
     This function should be used to set up Async precache calls at the beginning of the gameplay.
@@ -116,7 +139,7 @@ end
       DebugPrint("[BAREBONES] Hero spawned in game for first time -- " .. hero:GetUnitName())
 
     -- This line for example will set the starting gold of every hero to 500 unreliable gold
-  
+
 
     -- These lines will create an item and add it to the player, effectively ensuring they start with the item
     --local item = CreateItem("item_example_item", hero, hero)
@@ -141,76 +164,67 @@ end
       OFFSET=GameRules:GetGameTime()
       --initialise unit counter display
       
-     
+
 
       --since game time with 0:00
-     
+
         --instructions display
         --and timer to delay them
 
-end
-
-
-
-
-function start()
-local originp1=Entities:FindByName(nil,"originp1"):GetAbsOrigin()
---this gets all the players and playerid pos maybe do something with this
-for i = 0, 8 do
-      if players[i]~=nill then
-     players[i]:GetAssignedHero():SetOrigin(originp1)
       end
+
+
+
+
+      function start()
+        Instructions()
+        SpawnCreeps()
+
+
+
       end
-  SpawnCreeps()
-
---restrict hero movement
+      function SpawnCreeps()
 
 
-end
-function SpawnCreeps()
-
- 
 
 
   --if statement for when gametime has elapsed 45 seconds
 
   if  GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
     --roundinfo display
- if FIRST_ROUND==true then
+    if FIRST_ROUND==true then
      Timers:CreateTimer(function()
-     GameRules:SendCustomMessage("         Wave ".. ColorIt(ROUND,"red") .. " start", 0, 0)
+       GameRules:SendCustomMessage("         Wave ".. ColorIt(ROUND,"red") .. " start", 0, 0)
        FIRST_ROUND=false
-      return SPAWN_TIMER+DOWNTIME
-    end
-  )
-      end
+       return SPAWN_TIMER+DOWNTIME
+     end
+     )
+   end
    if GameRules:GetGameTime()>= OFFSET then
      --info on creep spawn specific stuff
-      RoundInformation()
+     RoundInformation()
       --this should hold the time at the END of the downtime
       if GameRules:GetGameTime()>OFFSET+SPAWN_TIMER then
         ROUND=ROUND+1
         OFFSET=GameRules:GetGameTime()+DOWNTIME
         return 1.0
       end
-
-      local point = Entities:FindByName( nil, "spawner"):GetAbsOrigin()
-
-
-
-      
-      local pos1 = Entities:FindByName( nil, "pos1")
-       --have to replace sheep with UNIT_NAME later
-       local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
-        unit:SetInitialGoalEntity(pos1)
+      if BOSS_SPAWN_CHECK==false then
+        CreepSpawnLocation()
       end
+      
+    end
+   
+    UnitCount()
   end
+ --print(OFFSET,"offset")
+     --print(OFFSET+SPAWN_TIMER,"offset+SPAWN_TIMER")
+      --print(BOSS_SPAWN_CHECK,"boss spawn check")
 
 
 
 
-
-  UnitCount()
+  
 
 end
 
@@ -219,22 +233,289 @@ end
 
 
 function RoundInformation()
-     
-        
+
+
   if ROUND == 1 then
     UNIT_NAME="sheep"
   elseif ROUND ==2 then
     UNIT_NAME="wolfcub"
+  elseif ROUND ==3 then
+    UNIT_NAME="black drake"
+  elseif ROUND ==4 then
+    UNIT_NAME="spiderling"
+  elseif ROUND ==5 then
+    UNIT_NAME="skeleton"
+  elseif ROUND ==6 then
+    UNIT_NAME="zombie"
+  elseif ROUND ==7 then
+    UNIT_NAME="crab"
+  elseif ROUND ==8 then
+    UNIT_NAME="drodo"
+  elseif ROUND ==9 then
+    UNIT_NAME="razorback"
+  elseif ROUND ==10 then
+    UNIT_NAME= "boss_puck"
+  elseif ROUND ==11 then
+    UNIT_NAME= "sheep"    
+    BOSS_SPAWN_CHECK=false
   end
 end
+
+function CreepSpawnLocation()
+
+  if players[0]~=nil then
+    local point = Entities:FindByName( nil, "spawner"):GetAbsOrigin()     
+    local start = Entities:FindByName( nil, "pos1")
+         --have to replace sheep with UNIT_NAME later
+         local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
+         unit:SetInitialGoalEntity(start)
+         unit:SetMustReachEachGoalEntity(true)
+       end
+
+       if players[1]~=nil then
+        local point = Entities:FindByName( nil, "spawner1"):GetAbsOrigin()     
+        local start = Entities:FindByName( nil, "2pos1")
+         --have to replace sheep with UNIT_NAME later
+         local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
+         unit:SetInitialGoalEntity(start)
+         unit:SetMustReachEachGoalEntity(true)
+       end
+
+       if players[2]~=nil then
+        local point = Entities:FindByName( nil, "spawner2"):GetAbsOrigin()     
+        local start = Entities:FindByName( nil, "3pos1")
+         --have to replace sheep with UNIT_NAME later
+         local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
+         unit:SetInitialGoalEntity(start)
+         unit:SetMustReachEachGoalEntity(true)
+       end
+
+       if players[3]~=nil then
+        local point = Entities:FindByName( nil, "spawner3"):GetAbsOrigin()     
+        local start = Entities:FindByName( nil, "4pos1")
+         --have to replace sheep with UNIT_NAME later
+         local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
+         unit:SetInitialGoalEntity(start)
+         unit:SetMustReachEachGoalEntity(true)
+       end
+
+       if ROUND%10==0 then
+        BOSS_SPAWN_CHECK=true
+      end
+     
+
+    end
+
+    function UnitCount()
+
+  -- make this player specific later and vector specific somehow
+  --need to check if this counter includes playerowned units
+  if players[0]~=nil then
+    local UnitCounter = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+      originp1,
+      nil,
+      2500,
+      DOTA_UNIT_TARGET_TEAM_ENEMY,
+      DOTA_UNIT_TARGET_CREEP,
+      0,
+      0,
+      false)
+
+    if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and UnitCounter~=nil then
+         local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+          originp1,
+          nil,
+          2500,
+          DOTA_UNIT_TARGET_TEAM_BOTH,
+          DOTA_UNIT_TARGET_ALL,
+          0,
+          0,
+          false)
+        for k,v in pairs(UnitKill) do
+          v:ForceKill(false)
+        end
+        players[0]=nil
+      end
+  
+
+
+    
+    if #UnitCounter>MAX_CREEPS then
+        --change this later to be player specific
+        local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+          originp1,
+          nil,
+          2500,
+          DOTA_UNIT_TARGET_TEAM_BOTH,
+          DOTA_UNIT_TARGET_ALL,
+          0,
+          0,
+          false)
+        for k,v in pairs(UnitKill) do
+          v:ForceKill(false)
+        end
+        players[0]=nil
+      end
+    end
+    if players[1]~=nil then
+      local UnitCounter = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+        originp2,
+        nil,
+        2500,
+        DOTA_UNIT_TARGET_TEAM_ENEMY,
+        DOTA_UNIT_TARGET_CREEP,
+        0,
+        0,
+        false)
+          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and UnitCounter1~=nil then
+         local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+          originp2,
+          nil,
+          2500,
+          DOTA_UNIT_TARGET_TEAM_BOTH,
+          DOTA_UNIT_TARGET_ALL,
+          0,
+          0,
+          false)
+        for k,v in pairs(UnitKill) do
+          v:ForceKill(false)
+        end
+        players[0]=nil
+    
+    end
+      if #UnitCounter1>MAX_CREEPS then
+  --change this later to be player specific
+        local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+          originp2,
+          nil,
+          2500,
+          DOTA_UNIT_TARGET_TEAM_BOTH,
+          DOTA_UNIT_TARGET_ALL,
+          0,
+          0,
+          false)
+        for k,v in pairs(UnitKill) do
+          v:ForceKill(false)
+        end
+        players[1]=nil
+      end
+    end
+
+    if players[2]~=nil then
+      local UnitCounter2 = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+        originp3,
+        nil,
+        2500,
+        DOTA_UNIT_TARGET_TEAM_ENEMY,
+        DOTA_UNIT_TARGET_CREEP,
+        0,
+        0,
+        false)
+      
+          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and UnitCounter2~=nil then
+         local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+          originp3,
+          nil,
+          2500,
+          DOTA_UNIT_TARGET_TEAM_BOTH,
+          DOTA_UNIT_TARGET_ALL,
+          0,
+          0,
+          false)
+        for k,v in pairs(UnitKill) do
+          v:ForceKill(false)
+        end
+        players[0]=nil
+      end
+    
+
+
+
+      if #UnitCounter2>MAX_CREEPS then
+      --change this later to be player specific
+      local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+        originp3,
+        nil,
+        2500,
+        DOTA_UNIT_TARGET_TEAM_BOTH,
+        DOTA_UNIT_TARGET_ALL,
+        0,
+        0,
+        false)
+        for k,v in pairs(UnitKill) do
+          v:ForceKill(false)
+        end
+      players[2]=nil
+      end
+    end
+    if players[3]~=nil then
+      local UnitCounter3 = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+        originp4,
+        nil,
+        2500,
+        DOTA_UNIT_TARGET_TEAM_ENEMY,
+        DOTA_UNIT_TARGET_CREEP,
+        0,
+        0,
+        false)
+      
+
+          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and UnitCounter3~=nil then
+         local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+          originp4,
+          nil,
+          2500,
+          DOTA_UNIT_TARGET_TEAM_BOTH,
+          DOTA_UNIT_TARGET_ALL,
+          0,
+          0,
+          false)
+        for k,v in pairs(UnitKill) do
+          v:ForceKill(false)
+        end
+        players[0]=nil
+      end
+    
+
+        if #UnitCounter3>MAX_CREEPS then
+        --change this later to be player specific
+        local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+          originp4,
+          nil,
+          2500,
+          DOTA_UNIT_TARGET_TEAM_BOTH,
+          DOTA_UNIT_TARGET_ALL,
+          0,
+          0,
+          false)
+        for k,v in pairs(UnitKill) do
+          v:ForceKill(false)
+        end
+        players[3]=nil
+      end
+
+    end
+
+
+    if players[0]==nil and players[1]==nil and players[2] == nil and players[3] ==nil then
+      Timers:CreateTimer(3, function()
+        ancient=Entities:FindByName(nil, "dota_goodguys_fort")
+        ancient:ForceKill(false);
+      end
+      )
+
+
+    end
+  end
+
 
 --message and color settings
 function ShowBossMessage( msg, dur )
   local msg = {
-  message = msg,
-  duration = dur
-}
-FireGameEvent("show_center_message",msg)
+    message = msg,
+    duration = dur
+  }
+  FireGameEvent("show_center_message",msg)
 end
 
 
@@ -250,49 +531,48 @@ end
     -- This also sets up event hooks for all event handlers in events.lua
     -- Check out internals/gamemode to see/modify the exact code
     GameMode:_InitGameMode()
-
+    originp1=Entities:FindByName(nil,"originp1"):GetAbsOrigin()
+    originp2=Entities:FindByName(nil,"originp2"):GetAbsOrigin()
+    originp3=Entities:FindByName(nil,"originp3"):GetAbsOrigin()
+    originp4=Entities:FindByName(nil,"originp4"):GetAbsOrigin()
     -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
     Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
-
+    GameRules:GetGameModeEntity():SetDamageFilter(Dynamic_Wrap(GameMode,"FilterDamage"),self)
+    SendToServerConsole("r_farz 7000")
     Timers:CreateTimer(function()
      start()
      return 1.5
    end
    )
-end
-
-
-
-function UnitCount()
-  -- make this player specific later and vector specific somehow
-  local originp1=Entities:FindByName(nil,"originp1"):GetAbsOrigin()
-  --need to check if this counter includes playerowned units
-  local UnitCounter = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
-  originp1,
-    nil,
-    2500,
-    DOTA_UNIT_TARGET_TEAM_ENEMY,
-    DOTA_UNIT_TARGET_CREEP,
-    0,
-    0,
-    false)
-  print(#UnitCounter,"number of units")
---[[
-if self._posOne~=nil then
-  print(self._posOne)
- self._posOne:SetTextReplaceString("#UnitCounter")
-  self._posOne:SetTextReplaceValue( QUEST_TEXT_REPLACE_VALUE_CURRENT_VALUE,#UnitCounter)
-end--]]
-
-  if #UnitCounter>50 then
-  --change this later to be player specific
-  ancient=Entities:FindByName(nil, "dota_goodguys_fort")
-  ancient:ForceKill(false);
+    Instructions()
   end
-end
 
-    DebugPrint('[BAREBONES] Done loading Barebones gamemode!\n\n')
- 
+
+
+
+  function  Instructions()
+    if  GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME and pregame==true then
+      -- A timer running every second that starts 5 seconds in the future, respects pauses
+      Timers:CreateTimer(5, function()
+       GameRules:SendCustomMessage(ColorIt("Creep start spawning at 00:00","red") , 0, 0)
+
+     end
+     )
+      Timers:CreateTimer(10, function()
+       GameRules:SendCustomMessage(ColorIt("Boss spawns every 10 rounds","purple") , 0, 0)
+
+     end
+     )
+      Timers:CreateTimer(20, function()
+       GameRules:SendCustomMessage(ColorIt("Good Luck!","red") , 0, 0)
+
+     end
+     )
+      pregame=false
+    end
+  end
+  DebugPrint('[BAREBONES] Done loading Barebones gamemode!\n\n')
+
 
   -- This is an example console command
   function GameMode:ExampleConsoleCommand()

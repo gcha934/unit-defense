@@ -1,3 +1,7 @@
 "AddonInfo"
 {
+		"Unit_Defense"
+	{
+		"MaxPlayers"		"4"
+	}
 }

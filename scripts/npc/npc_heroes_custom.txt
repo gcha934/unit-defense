@@ -1,7 +1,10 @@
 "DOTAHeroes"
-{
+{   
   "npc_dota_hero_wisp"
   {
+
+
+    
     "AbilityLayout"     "6"
     "override_hero"     "npc_dota_hero_wisp"
     "SoundSet"          "0" 
@@ -9,7 +12,7 @@
     "Ability2"        "increase_agility"
     "Ability3"        "increase_intellect"
     "Ability4"        "Spawn_Unit"
-    "Ability5"        "Spawn_Super_Unit"
+    "Ability5"        ""
     "Ability6"        ""
     "Ability7"        ""
     "Ability8"        ""
@@ -21,15 +24,15 @@
     "Ability14"       ""
     "Ability15"       ""
     "Ability16"       ""
-
+    
     "ArmorPhysical"       "0"                 // Physical protection.
     "MagicalResistance"       "0"                 // Magical protection (percentage).
 
-    "AttackCapabilities"    "DOTA_UNIT_CAP_NO_ATTACK"
+    "AttackCapabilities"    "DOTA_UNIT_CAP_MELEE_ATTACK"
     "AttackDamageMin"     "1"                   // Damage range min.
     "AttackDamageMax"     "1"                   // Damage range max.
 
-    //"AttributePrimary"      "DOTA_ATTRIBUTE_STRENGTH"
+    //"AttributePrimary"      "DOTA_ATTRIBUTE_AGILITY"
     "AttributeBaseStrength"   "0"                   // Base strength
     "AttributeStrengthGain"   "0"                   // Strength bonus per level.
     "AttributeBaseIntelligence" "0"                   // Base intelligence
@@ -41,12 +44,12 @@
     "BountyGoldMin"       "0"                   // Gold earned min.
     "BountyGoldMax"       "0"                   // Gold earned max.
 
-    //"BoundsHullName"      "DOTA_HULL_SIZE_HERO"
-    //"RingRadius"        "70"
+    "BoundsHullName"      "DOTA_HULL_SIZE_BARRACKS"
+    "RingRadius"        "144"
 
-    "MovementCapabilities"    "DOTA_UNIT_CAP_MOVE_GROUND"
-    "MovementSpeed"       "500"                 // Speed.
-    "MovementTurnRate"      "1.0"                 // Turning rate.
+    //"MovementCapabilities"    "DOTA_UNIT_CAP_MOVE_NONE"
+    "MovementSpeed"       "0"                 // Speed.
+    "MovementTurnRate"      "-100.0"                 // Turning rate.
 
     "StatusHealth"        "1"                 // Base health.
     "StatusHealthRegen"     "0.0"                 // Health regeneration rate.
@@ -56,4 +59,5 @@
     "VisionDaytimeRange"    "1800"                  // Range of vision at night time.
     "VisionNighttimeRange"    "1800"                  // Range of vision at night time.
   }
+
 }

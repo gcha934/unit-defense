@@ -17,34 +17,77 @@ function Precache( context )
 
   -- Particles can be precached individually or by folder
   -- It it likely that precaching a single particle system will precache all of its children, but this may not be guaranteed
-  PrecacheResource("particle", "particles/econ/generic/generic_aoe_explosion_sphere_1/generic_aoe_explosion_sphere_1.vpcf", context)
-  PrecacheResource("particle_folder", "particles/test_particle", context)
+
 
   -- Models can also be precached by folder or individually
+
   -- PrecacheModel should generally used over PrecacheResource for individual models
-  PrecacheResource("model_folder", "particles/heroes/antimage", context)
-  PrecacheResource("model", "particles/heroes/viper/viper.vmdl", context)
-  PrecacheModel("models/heroes/viper/viper.vmdl", context)
 
   -- Sounds can precached here like anything else
-  PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_gyrocopter.vsndevts", context)
+  
 
-  -- Entire items can be precached by name
-  -- Abilities can also be precached in this way despite the name
-  PrecacheItemByNameSync("example_ability", context)
-  PrecacheItemByNameSync("item_example_item", context)
 
   -- Entire heroes (sound effects/voice/models/particles) can be precached with PrecacheUnitByNameSync
   -- Custom units from npc_units_custom.txt can also have all of their abilities and precache{} blocks precached in this way
-  PrecacheUnitByNameSync("npc_dota_hero_ancient_apparition", context)
-  PrecacheUnitByNameSync("npc_dota_hero_enigma", context)
+  --PrecacheUnitByNameSync("", context)
+  
+PrecacheUnitByNameSync("Troll Priest", context)
+PrecacheUnitByNameSync("Slayer", context)
+PrecacheUnitByNameSync("Naga", context)
+ PrecacheUnitByNameSync("Troll Duplicator", context)
+  PrecacheUnitByNameSync("Ghost", context)
+  PrecacheUnitByNameSync("Juggernaut", context)
+PrecacheUnitByNameSync("Centaur Chief", context)
+PrecacheUnitByNameSync("Frost Wyrm", context)
+PrecacheUnitByNameSync("Zealot", context)
+PrecacheUnitByNameSync("Toxic Slinger", context)
+PrecacheUnitByNameSync("Teddy", context)
+PrecacheUnitByNameSync("Water Elemental", context)
+PrecacheUnitByNameSync("Fire Beast", context)
+PrecacheUnitByNameSync( "Spellbreaker", context)
+PrecacheUnitByNameSync( "Normal Knight", context)
+PrecacheUnitByNameSync("Marine", context)
+PrecacheUnitByNameSync("Revenant", context)
+PrecacheUnitByNameSync( "Avatar", context)
+PrecacheUnitByNameSync("Ghost Rider", context)
+PrecacheUnitByNameSync("Hunter", context)
+PrecacheUnitByNameSync("Aloof Giant", context)
+PrecacheUnitByNameSync("", context)
+PrecacheUnitByNameSync("", context)
 --creeps 
-  PrecacheUnitByNameSync("sheep", context)
+ 
+ PrecacheUnitByNameSync("sheep", context)
   PrecacheUnitByNameSync("wolfcub", context)
+  PrecacheUnitByNameSync( "black drake", context)
+  PrecacheUnitByNameSync ("spiderling", context)
+  PrecacheUnitByNameSync(  "skeleton", context)
+  PrecacheUnitByNameSync(  "zombie", context)
+  PrecacheUnitByNameSync( "crab", context)
+  PrecacheUnitByNameSync ("drodo", context)
+  PrecacheUnitByNameSync( "razorback", context)
+  PrecacheUnitByNameSync( "boss_puck", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+  PrecacheUnitByNameSync("", context)
+
+
+
 end
 
 -- Create the game mode when we activate
 function Activate()
   GameRules.GameMode = GameMode()
   GameRules.GameMode:InitGameMode()
+
 end
