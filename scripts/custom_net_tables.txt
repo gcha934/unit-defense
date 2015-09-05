@@ -2,6 +2,9 @@
 {
   custom_net_tables =
   [
-//    "game_state",
+   
+        "example_nettable_1",
+        "example_nettable_2"
+    
   ]
 }

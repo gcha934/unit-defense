@@ -9,7 +9,7 @@ local agiUpgrade=0
     local prefix = "modifier_trueshot_damage_agility_mod_"
     local percent = ability:GetLevelSpecialValueFor( "trueshot_ranged_damage", ability:GetLevel() - 1 )
      Timers:CreateTimer( DoUniqueString( "trueshot_updateDamage_" .. target:entindex() ), {
-        endTime = 1,
+        endtime = 0.3,
         callback = function()
 
             if target and (target:HasModifier("modifier_strong_agility_multiplier_datadriven") or target:HasModifier("modifier_medium_agility_multiplier_datadriven") 
@@ -22,21 +22,21 @@ local agiUpgrade=0
                    agiUpgrade=1
                     damage=0
                     ability=caster:GetAbilityByIndex(1)
-                    print("this ran")
+               
                 end
                 if caster:HasAbility("increase_agility_tier3") and (agiUpgrade==0 or agiUpgrade ==1)then
                     agiUpgrade=2
                     damage=0
                     ability=caster:GetAbilityByIndex(1)
-                    print("this ran")
+              
                 end
                 local multiplier=1
                 if target:HasModifier("modifier_strong_agility_multiplier_datadriven") then
-                    multiplier=8
+                    multiplier=3
                 elseif target:HasModifier("modifier_medium_agility_multiplier_datadriven") then
-                    multiplier=5
-                elseif target:HasModifier("modifier_weak_agility_multiplier_datadriven") then
                     multiplier=2
+                elseif target:HasModifier("modifier_weak_agility_multiplier_datadriven") then
+                    multiplier=1
                 end
                 --i will need to adjust this for each unit that i want to have a different value. probably going make another function inside this
                 local damage = math.floor( agility * percent / 100 )*multiplier
@@ -82,7 +82,7 @@ local agiUpgrade=0
                     end
                 end
                 target.TrueshotDamage = damage_ref
-                return 1
+                return 0.3
             else
                 return nil
             end
@@ -92,6 +92,8 @@ end
 
 function increase_agility(keys)
      local caster = keys.caster
+      local pID = caster:GetPlayerID()
+      agi[pID]=agi[pID]+1
      local ability = keys.ability
       if caster:HasModifier("modifier_increase_agility") == false then
         ability:ApplyDataDrivenModifier( caster, caster, "modifier_increase_agility", nil)
@@ -136,7 +138,7 @@ function trueshot_initialize_strength( keys )
    
 
 
-        endTime = 1,
+        endtime = 0.3,
         callback = function()
 
             if target and (target:HasModifier("modifier_strong_strength_multiplier_datadriven") or target:HasModifier("modifier_medium_strength_multiplier_datadriven") 
@@ -148,25 +150,25 @@ function trueshot_initialize_strength( keys )
                    strUpgrade=1
                     damage=0
                     ability=caster:GetAbilityByIndex(0)
-                    print("this ran")
+                 
                 end
                 if caster:HasAbility("increase_strength_tier3") and (strUpgrade==0 or strUpgrade ==1)then
                     strUpgrade=2
                     damage=0
                     ability=caster:GetAbilityByIndex(0)
-                    print("this ran")
+                 
                 end
                 
-                print("looping")
+             
                
                
                 local multiplier=1
                 if target:HasModifier("modifier_strong_strength_multiplier_datadriven") then
-                    multiplier=8
+                    multiplier=3
                 elseif target:HasModifier("modifier_medium_strength_multiplier_datadriven") then
-                    multiplier=5
-                elseif target:HasModifier("modifier_weak_strength_multiplier_datadriven") then
                     multiplier=2
+                elseif target:HasModifier("modifier_weak_strength_multiplier_datadriven") then
+                    multiplier=1
                 end
                 --i will need to adjust this for each unit that i want to have a different value. probably going make another function inside this
                 local damage = math.floor( strength * percent / 100 )*multiplier
@@ -212,7 +214,7 @@ function trueshot_initialize_strength( keys )
                     end
                 end
                 target.TrueshotDamage = damage_ref
-                return 1
+                return 0.3
             else
                 return nil
             end
@@ -223,6 +225,8 @@ end
 function increase_strength(keys)
      local caster = keys.caster
      local ability = keys.ability
+      local pID = caster:GetPlayerID()
+     str[pID]=str[pID]+1
       if caster:HasModifier("modifier_increase_strength") == false then
         ability:ApplyDataDrivenModifier( caster, caster, "modifier_increase_strength", nil)
         caster:SetModifierStackCount("modifier_increase_strength", caster, 1)
@@ -261,7 +265,7 @@ function trueshot_initialize_intellect( keys )
     local prefix = "modifier_trueshot_damage_intellect_mod_"
      local percent = ability:GetLevelSpecialValueFor( "trueshot_ranged_damage", ability:GetLevel() - 1 )
      Timers:CreateTimer( DoUniqueString( "trueshot_updateDamage_" .. target:entindex() ), {
-        endTime = 1,
+        endtime = 0.3,
         callback = function()
 
             if target and (target:HasModifier("modifier_strong_intellect_multiplier_datadriven") or target:HasModifier("modifier_medium_intellect_multiplier_datadriven") 
@@ -273,21 +277,21 @@ function trueshot_initialize_intellect( keys )
                    intUpgrade=1
                     damage=0
                     ability=caster:GetAbilityByIndex(2)
-                    print("this ran")
+                
                 end
                 if caster:HasAbility("increase_intellect_tier3") and (intUpgrade==0 or intUpgrade ==1)then
                     intUpgrade=2
                     damage=0
                     ability=caster:GetAbilityByIndex(2)
-                    print("this ran")
+             
                 end
                 local multiplier=1
                 if target:HasModifier("modifier_strong_intellect_multiplier_datadriven") then
-                    multiplier=8
+                    multiplier=3
                 elseif target:HasModifier("modifier_medium_intellect_multiplier_datadriven") then
-                    multiplier=5
-                elseif target:HasModifier("modifier_weak_intellect_multiplier_datadriven") then
                     multiplier=2
+                elseif target:HasModifier("modifier_weak_intellect_multiplier_datadriven") then
+                    multiplier=1
                 end
                 --i will need to adjust this for each unit that i want to have a different value. probably going make another function inside this
                 local damage = math.floor( intellect * percent / 100 )*multiplier
@@ -333,7 +337,7 @@ function trueshot_initialize_intellect( keys )
                     end
                 end
                 target.TrueshotDamage = damage_ref
-                return 1
+                return 0.3
             else
                 return nil
             end
@@ -343,6 +347,8 @@ end
 function increase_intellect(keys)
      local caster = keys.caster
      local ability = keys.ability
+      local pID = caster:GetPlayerID()
+      int[pID]=int[pID]+1
       if caster:HasModifier("modifier_increase_intellect") == false then
         ability:ApplyDataDrivenModifier( caster, caster, "modifier_increase_intellect", nil)
         caster:SetModifierStackCount("modifier_increase_intellect", caster, 1)
@@ -378,7 +384,7 @@ function SpawnUnit( event )
     local caster = event.caster
     local pID = caster:GetPlayerID()
     local ability = event.ability
- 
+    units[pID]=units[pID]+1
     local point = event.caster:GetAbsOrigin()
     local unit_name = randomUnit()
    
@@ -386,12 +392,13 @@ function SpawnUnit( event )
     Timers:CreateTimer(0.03,function() 
  
 
-                print(unit_name,"unit name")
+          
                 local unit = CreateUnitByName(unit_name, point, true, caster, caster, caster:GetTeamNumber())
                 
                 unit:SetControllableByPlayer(pID, true)
                 unit:AddNewModifier(caster, ability, "modifier_phased", {duration = 0.03})
                unit:SetHullRadius(60)
+         
              
         end
     )
@@ -400,8 +407,8 @@ end
 
    function randomUnit()
 
-    unitIndex=20--math.random(21)
-    print(unitIndex,"this is unit index")
+    unitIndex=math.random(21)
+ 
         if unitIndex==1 then
             return "Slayer"
         elseif unitIndex== 2 then
@@ -437,13 +444,13 @@ end
          elseif unitIndex== 17 then
             return "Revenant"
         elseif unitIndex== 18 then
-            return "Avatar"
-    
+            return "Avatar"   
         elseif unitIndex== 19 then
             return "Hunter"
          elseif unitIndex== 20 then
             return  "Aloof Giant"
-      
+         elseif unitIndex== 21 then
+            return  "Succubus"
         end
         
      end   
@@ -468,7 +475,7 @@ function Cooldown(keys)
     local target = keys.target
     local ability = keys.ability
     local cooldown = ability:GetCooldown(ability:GetLevel() - 1)
-   if ability:IsCooldownReady() then 
+   if ability:IsCooldownReady() and caster:IsStunned()==false then 
  
     ability:StartCooldown(cooldown)
     keys.caster:AddNoDraw()
@@ -477,7 +484,25 @@ function Cooldown(keys)
     end
 end
 
+function plague(keys)
+   
+    local caster = keys.caster
+    local target = keys.target
+    local ability = keys.ability
+    local cooldown = ability:GetCooldown(ability:GetLevel() - 1)
+    local attacker=keys.attacker
+     if ability:IsCooldownReady() then 
+ 
+    ability:StartCooldown(cooldown)
+   
+    EmitSoundOn("Hero_DeathProphet.CarrionSwarm",attacker)
+     local particleName = "particles/econ/items/nightstalker/nightstalker_black_nihility/nightstalker_black_nihility_void_swarm.vpcf"
+            local particle = ParticleManager:CreateParticle(particleName, PATTACH_ABSORIGIN_FOLLOW,attacker)
+             Timers:CreateTimer(3, function() ParticleManager:DestroyParticle(particle,true) end)     
 
+   attacker:ForceKill(false)
+    end
+end
 --[[
     Author: Ractidous
     Date: 29.01.2015.
@@ -508,34 +533,36 @@ function ManaShield( event )
     local absorption_percent = ability:GetLevelSpecialValueFor("absorption_tooltip", ability:GetLevel() - 1 ) * 0.01
     local damage = event.Damage * absorption_percent
     local not_reduced_damage = event.Damage - damage
-
+    local attacker=event.attacker
     local caster_mana = caster:GetMana()
     local mana_needed = damage / damage_per_mana
 
+    if (attacker==caster)==false then
     -- Check if the not reduced damage kills the caster
-    local oldHealth = caster.OldHealth - not_reduced_damage
+        local oldHealth = caster.OldHealth - not_reduced_damage
 
-    -- If it doesnt then do the HP calculation
-    if oldHealth >= 1 then
-       -- print("Damage taken "..damage.." | Mana needed: "..mana_needed.." | Current Mana: "..caster_mana)
+        -- If it doesnt then do the HP calculation
+        if oldHealth >= 1 then
+            --print("Damage taken "..damage.." | Mana needed: "..mana_needed.." | Current Mana: "..caster_mana)
 
-        -- If the caster has enough mana, fully heal for the damage done
-        if mana_needed <= caster_mana then
-            caster:SpendMana(mana_needed, ability)
-            caster:SetHealth(oldHealth)
-            
-            -- Impact particle based on damage absorbed
-            local particleName = "particles/units/heroes/hero_medusa/medusa_mana_shield_impact.vpcf"
-            local particle = ParticleManager:CreateParticle(particleName, PATTACH_ABSORIGIN_FOLLOW, caster)
-            ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin())
-            ParticleManager:SetParticleControl(particle, 1, Vector(mana_needed,0,0))
-        else
-            local newHealth = oldHealth - damage
-            mana_needed =
-            caster:SpendMana(mana_needed, ability)
-            caster:SetHealth(newHealth)
-        end
-    end 
+            -- If the caster has enough mana, fully heal for the damage done
+            if mana_needed <= caster_mana then
+                caster:SpendMana(mana_needed, ability)
+                caster:SetHealth(oldHealth)
+                
+                -- Impact particle based on damage absorbed
+                local particleName = "particles/units/heroes/hero_medusa/medusa_mana_shield_impact.vpcf"
+                local particle = ParticleManager:CreateParticle(particleName, PATTACH_ABSORIGIN_FOLLOW, caster)
+                ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin())
+                ParticleManager:SetParticleControl(particle, 1, Vector(mana_needed,0,0))
+            else
+                local newHealth = oldHealth - damage
+                mana_needed =
+                caster:SpendMana(mana_needed, ability)
+                caster:SetHealth(newHealth)
+            end
+        end 
+    end
 end
 
 -- Keeps track of the targets health
@@ -545,23 +572,15 @@ function ManaShieldHealth( event )
     caster.OldHealth = caster:GetHealth()
 end
 
-function StunAura( event )
-  
-    local caster = event.caster
-    local pID = event.caster:GetPlayerID()
-    local ability = event.ability
-  
-    local point = event.caster:GetAbsOrigin()
-    local unit_name = event.UnitName
-  
-end
+
 
 function ManaBreak( keys )
     local target = keys.target
     local caster = keys.caster
     local ability = keys.ability
-    --20+20% per damage
-    local manaBurn = ability:GetLevelSpecialValueFor("mana_per_hit", (ability:GetLevel() - 1))+(caster:GetAverageTrueAttackDamage()/2)
+    local scale  = ability:GetLevelSpecialValueFor("scale", (ability:GetLevel() - 1))
+   
+    local manaBurn = math.floor(ability:GetLevelSpecialValueFor("mana_per_hit", (ability:GetLevel() - 1))+(caster:GetAverageTrueAttackDamage()*scale/100))
     local manaDamage = ability:GetLevelSpecialValueFor("damage_per_burn", (ability:GetLevel() - 1))
    
     local damageTable = {}
@@ -614,10 +633,7 @@ function DeathHeal( event )
         ParticleManager:SetParticleControl(caster.ReincarnateParticle, 0, respawnPosition)
         ParticleManager:SetParticleControl(caster.ReincarnateParticle, 1, Vector(slow_radius,0,0))
 
-        -- End Particle after reincarnating
-        Timers:CreateTimer(reincarnate_time, function() 
-            ParticleManager:DestroyParticle(caster.ReincarnateParticle, false)
-        end)
+
 
         -- Grave and rock particles
         -- The parent "particles/units/heroes/hero_skeletonking/skeleton_king_death.vpcf" misses the grave model
@@ -656,17 +672,45 @@ function DeathHeal( event )
 
 end
 
+function Supernova( event)
+  local caster = event.caster
+    local attacker = event.attacker
+    local ability = event.ability
+    local cooldown = ability:GetCooldown(ability:GetLevel() - 1)
+    local casterHP = caster:GetHealth()
+    local casterMana = caster:GetMana()
+    local abilityManaCost = ability:GetManaCost( ability:GetLevel() - 1 )
+    local begin_modifier=event.begin_modifier
+    -- Change it to your game needs
+
+    if casterHP == 0 and ability:IsCooldownReady() and (attacker==caster)==false then
+        caster:SetHealth(1)
+        ability:ApplyDataDrivenModifier(caster, caster,begin_modifier, {}) 
+        ability:StartCooldown(cooldown)
+   
+ elseif casterHP == 0 and ability:IsCooldownReady()==false  then
+    
+          local particleName = "particles/units/heroes/hero_phoenix/phoenix_death.vpcf"
+        local particle = ParticleManager:CreateParticle( particleName, PATTACH_ABSORIGIN,caster )
+       
+    end
+
+
+end
+
 function Alacrity( keys )
     local caster = keys.caster
     local target = keys.target
     local ability = keys.ability
-
+    local damage_scale=(ability:GetLevelSpecialValueFor("damage_scale", ability:GetLevel() - 1 ))
+    local attack_speed_scale=(ability:GetLevelSpecialValueFor("attack_speed_scale", ability:GetLevel() - 1 ))
     -- Ability variables
-   
-    local damage = ability:GetLevelSpecialValueFor("bonus_damage", ability:GetLevel() - 1 )+(caster:GetAverageTrueAttackDamage()*1.5)
-    local attack_speed = ability:GetLevelSpecialValueFor("bonus_attack_speed", ability:GetLevel() - 1 )+(caster:GetAverageTrueAttackDamage())
+       local damage = math.floor(ability:GetLevelSpecialValueFor("bonus_damage", ability:GetLevel() - 1 )+(caster:GetAverageTrueAttackDamage()*damage_scale/100))
+        local attack_speed = math.floor(ability:GetLevelSpecialValueFor("bonus_attack_speed", ability:GetLevel() - 1 )+(caster:GetAverageTrueAttackDamage()*attack_speed_scale/100))
+ 
     local damage_modifier = keys.damage_modifier
     local speed_modifier = keys.speed_modifier
+
 
     -- Apply the bonus modifiers
     ability:ApplyDataDrivenModifier(caster, target, damage_modifier, {}) 
@@ -677,52 +721,39 @@ function Alacrity( keys )
     target:SetModifierStackCount(speed_modifier, ability, attack_speed) 
 end
 
+
+
+
 function ConjureImage( event )
 
  local caster = event.caster
+
  --local player = caster:GetPlayerID()
 
- local ability = event.ability
+ local ability =  event.ability
  local unit_name = caster:GetUnitName()
  local origin = caster:GetAbsOrigin()
- local duration = ability:GetLevelSpecialValueFor( "illusion_duration", ability:GetLevel() - 1 )
+ local duration = 1.5
 --ghetto solution to cap total number of illusions to stop it from going insane accidently
-if #Entities:FindAllByNameWithin(unit_name, caster:GetAbsOrigin(), 3000)<20 then
 
+  
 
  -- handle_UnitOwner needs to be nil, else it will crash the game.
 
-     local illusion = CreateUnitByName(unit_name, origin, true, caster, nil, caster:GetTeamNumber())
+     local illusion = CreateUnitByName("Troll Dummy", origin, true, caster, nil, caster:GetTeamNumber())
+    
     -- illusion:SetPlayerID(caster:GetPlayerID())
      illusion:SetControllableByPlayer(caster:GetPlayerOwnerID(), true)
+     illusion:SetModelScale(caster:GetModelScale())
 
      -- Level Up the unit to the casters level
-     local casterLevel = caster:GetLevel()
-     for i=1,casterLevel-1 do
-      illusion:HeroLevelUp(false)
-     end
+  
 
      -- Set the skill points to 0 and learn the skills of the caster
      --illusion:SetAbilityPoints(0)
-     for abilitySlot=0,15 do
-      local ability = caster:GetAbilityByIndex(abilitySlot)
-      if ability ~= nil then 
-       local abilityLevel = ability:GetLevel()
-       local abilityName = ability:GetAbilityName()
-       local illusionAbility = illusion:FindAbilityByName(abilityName)
-       illusionAbility:SetLevel(abilityLevel)
-      end
-     end
 
      -- Recreate the items of the caster
-     for itemSlot=0,5 do
-      local item = caster:GetItemInSlot(itemSlot)
-      if item ~= nil then
-       local itemName = item:GetName()
-       local newItem = CreateItem(itemName, illusion, illusion)
-       illusion:AddItem(newItem)
-      end
-     end
+   
 
 
      -- Add our datadriven Metamorphosis modifier if appropiate
@@ -732,8 +763,10 @@ if #Entities:FindAllByNameWithin(unit_name, caster:GetAbsOrigin(), 3000)<20 then
    --not illusion but behave like one
      illusion:AddNewModifier(caster, ability, "modifier_kill", {duration = duration})
      illusion:AddNewModifier(caster, ability, "modifier_phased", {duration = 0.03})
- 
-
+    illusion:SetBaseDamageMin(caster:GetAverageTrueAttackDamage())
+     illusion:SetBaseDamageMax(caster:GetAverageTrueAttackDamage())    
+   
+   
   Timers:CreateTimer(duration-0.05, function()
        illusion:AddNoDraw()
       local particleName = "particles/units/heroes/hero_phantom_lancer/phantomlancer_illusion_destroy.vpcf"
@@ -743,7 +776,7 @@ if #Entities:FindAllByNameWithin(unit_name, caster:GetAbsOrigin(), 3000)<20 then
     end
   )
     
-    end
+    
 end
 
 function ToggleAutocast (event)
@@ -757,21 +790,23 @@ end
 function PoisonSting(event)
    local caster = event.caster
 
- local ability = event.ability
- 
+ local ability = caster:GetAbilityByIndex(0)
+   local scale = ability:GetLevelSpecialValueFor("scale", ability:GetLevel() - 1 )
+
  local target = event.target
- --+25% scale
-     local bonusdamage =(caster:GetAverageTrueAttackDamage()/4)
-
-
+      bonusdamage =math.floor((caster:GetAverageTrueAttackDamage()*scale/100))
 local damage_table = {} 
 damage_table.attacker = caster
     damage_table.damage_type = ability:GetAbilityDamageType()
     damage_table.ability = ability
     damage_table.victim = target
     damage_table.damage=bonusdamage
+    damage_table.damage_type=DAMAGE_TYPE_MAGICAL
     ApplyDamage(damage_table)
+
+    PopupDamageOverTime(target, bonusdamage)
 end
+
 
 
 function SplashDamage(keys)
@@ -780,8 +815,16 @@ function SplashDamage(keys)
     local splash = ability:GetLevelSpecialValueFor("splash_damage", ability:GetLevel() - 1 )
     local keydamage =math.floor( caster:GetAverageTrueAttackDamage()*splash/ 100 )
     local radius = ability:GetLevelSpecialValueFor("radius", ability:GetLevel() - 1 )
+      local target = keys.target
+   
+    if ability:GetAbilityName()=="shrapnel_splash_datadriven" or ability:GetAbilityName()=="shrapnel_splash_datadriven_tier2" then
+      
+    local particleName =  "particles/units/heroes/hero_lina/lina_spell_light_strike_array_explosion.vpcf"
+        local particle = ParticleManager:CreateParticle( particleName, PATTACH_ABSORIGIN, target )
+        EmitSoundOn("Hero_Crystal.CrystalNova.Yulsaria",target)
+
+    end
   
-    local target = keys.target
    
     local targets = FindUnitsInRadius(caster:GetTeam(), target:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 0, false)
 
@@ -796,20 +839,22 @@ function SplashDamage(keys)
             ApplyDamage(damageTable)
 
         end
+
     end
 end
+  
 function stormbolt(keys)
  local caster = keys.caster
     local ability = keys.ability
 local radius = ability:GetLevelSpecialValueFor("bolt_aoe", ability:GetLevel() - 1 )
-    local keydamage=caster:GetAverageTrueAttackDamage()*5
+ local scale=ability:GetLevelSpecialValueFor("scale", ability:GetLevel() - 1 )
+ local damage=ability:GetLevelSpecialValueFor("AbilityDamage", ability:GetLevel() - 1 )
+    local keydamage=math.floor(caster:GetAverageTrueAttackDamage()*scale/100)+damage
     local target = keys.target
-   
-    local targets = FindUnitsInRadius(caster:GetTeam(), target:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 0, false)
-
-    for i = 1, #targets do
+ 
+  
             local damageTable = {
-                victim = targets[i],
+                victim = target,
                 attacker = caster,
                 damage = keydamage,
                 damage_type = DAMAGE_TYPE_MAGICAL,
@@ -817,23 +862,20 @@ local radius = ability:GetLevelSpecialValueFor("bolt_aoe", ability:GetLevel() - 
             ApplyDamage(damageTable)
 
         
-    end
+   
 
 end
 
 function Immolation(keys)
-
      local caster = keys.caster
     local ability = keys.ability
-    local keydamage=0
 
-    local burnDamage =caster:GetAverageTrueAttackDamage()
-if burnDamage>ability:GetLevelSpecialValueFor("scaling", ability:GetLevel() - 1 ) then 
-    keydamage=burnDamage
-else
-    --scale by 20% before +30 damage
-    keydamage=caster:GetAverageTrueAttackDamage()/5
-end
+        
+    
+    
+    local scale=ability:GetLevelSpecialValueFor("scale", ability:GetLevel() - 1 )
+    local keydamage =caster:GetAverageTrueAttackDamage()*scale/100
+
     local radius = ability:GetLevelSpecialValueFor("radius", ability:GetLevel() - 1 )
 
     local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 0, false)
@@ -843,9 +885,10 @@ end
                 victim = targets[i],
                 attacker = caster,
                 damage = keydamage,
-                damage_type = DAMAGE_TYPE_PHYSICAL,
+                damage_type = DAMAGE_TYPE_MAGICAL,
             }
-            ApplyDamage(damageTable)  
+            ApplyDamage(damageTable) 
+          
     end
 end    
 
@@ -853,36 +896,37 @@ end
 
      local caster = keys.caster
     local ability = keys.ability
-    --scale by 500%
-    local keydamage =caster:GetAverageTrueAttackDamage()*5
+     local scale=ability:GetLevelSpecialValueFor("scale", ability:GetLevel() - 1 )
+     local keydamage=ability:GetLevelSpecialValueFor("AbilityDamage", ability:GetLevel() - 1 )
+    local bonusdamage =math.floor(caster:GetAverageTrueAttackDamage()*scale/100)
     local radius = ability:GetLevelSpecialValueFor("radius", ability:GetLevel() - 1 )
-
-    local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 0, false)
-    for i = 1, #targets do
+       local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 0, false)
+     Timers:CreateTimer(ability:GetLevelSpecialValueFor("starfall_delay", ability:GetLevel() - 1 ), function()
+   
+    
+ 
        
             local damageTable = {
-                victim = targets[i],
+                victim = keys.target,
                 attacker = caster,
-                damage = keydamage,
-                damage_type = DAMAGE_TYPE_PHYSICAL,
+                damage = keydamage+bonusdamage,
+                damage_type = DAMAGE_TYPE_MAGICAL,
             }
             ApplyDamage(damageTable)  
-    end
+                EmitSoundOn("Ability.StarfallImpact",target)
+
+    end)
+   
+    
 end
  function Rabid( event )
     local caster = event.caster
     local targets = event.target_entities
     local ability = event.ability
-    local rabid_duration = ability:GetLevelSpecialValueFor( "rabid_duration", ability:GetLevel() - 1 )+caster:GetAverageTrueAttackDamage()/10
+     local scale=ability:GetLevelSpecialValueFor("scale", ability:GetLevel() - 1 )
+    local rabid_duration = math.floor(ability:GetLevelSpecialValueFor( "rabid_duration", ability:GetLevel() - 1 )+caster:GetAverageTrueAttackDamage()*scale/100)
 
-    -- Unit name contains a part of the unit name, so you can make different levels of the unit and they will still be registered
-    -- If you change this to "" in the parameter passed, it will affect all self-controlled units
-   
 
-  
-    -- If the ability is found, take the ability specials and add the duration
-    -- We expect a rabid_duration_bonus in the synergy ability
-  
     -- Iterate over all the units
     for _,unit in pairs(targets) do
        
@@ -937,9 +981,11 @@ function LightningStrike( keys)
     local target = keys.target
     local ability = keys.ability
     local target = keys.target
-
-    local bonus=math.random(caster:GetAverageTrueAttackDamage()*2)
-    
+     local scale=ability:GetLevelSpecialValueFor("scale", ability:GetLevel() - 1 )
+    local bonus=math.random(math.floor(caster:GetAverageTrueAttackDamage()*scale/100))
+     local particleName = "particles/units/heroes/hero_stormspirit/stormspirit_overload_discharge.vpcf"
+        local particle = ParticleManager:CreateParticle( particleName, PATTACH_ABSORIGIN, target )
+        EmitSoundOn("Hero_Zuus.LightningBolt",target)
      local damageTable = {
                 victim = target,
                 attacker = caster,
@@ -947,20 +993,43 @@ function LightningStrike( keys)
                 damage_type = DAMAGE_TYPE_MAGICAL
             }
              ApplyDamage(damageTable) 
-    
+            
 
 end
 --damage block
 function GameMode:FilterDamage( filterTable )
-    for k, v in pairs( filterTable ) do
-        print("Order: " .. k .. " " .. tostring(v) )
-    end
+  --for k, v in pairs( filterTable ) do
+      --print("Order: " .. k .. " " .. tostring(v) )
+ --end
+
     local victim= EntIndexToHScript(filterTable["entindex_victim_const"])
+   local attacker= EntIndexToHScript(filterTable["entindex_attacker_const"])
       if victim:HasModifier("lesser_damage_block") then
-        if  filterTable["damage"]<=25 then
+        if  filterTable["damage"]<=20 then
+         
             return false
-        end       
+        end    
+     end
+    if victim:HasModifier("damage_block") then
+        if  filterTable["damage"]<=45 then
+       
+            return false
+        end  
+    end  
+    if victim:HasModifier("greater_damage_block") then
+        if  filterTable["damage"]<=90 then
+       
+            return false
+        end    
     end
+
+     if victim:HasModifier("Rough_Armor")  then
+    filterTable["damage"]=1
+     
+            return true
+        end    
+   
+   
     return true
 end
 function Flatten(keys)
@@ -976,7 +1045,7 @@ function Flatten(keys)
                 damage_type = DAMAGE_TYPE_PURE
             }
              ApplyDamage(damageTable) 
-        print(damage,"this is damage")
+    
      
 
 end
@@ -1000,3 +1069,284 @@ function findProjectileInfo(class_name)
 end
 
 
+function TrueStrike(keys)
+     local caster = keys.caster
+    local ability = keys.ability
+    local target = keys.target
+ local scale=ability:GetLevelSpecialValueFor("bonus%", ability:GetLevel() - 1 )
+local keydamage=caster:GetAverageTrueAttackDamage()*scale/100
+ 
+    if target:GetAbilityByIndex(0)~=nil then
+         local damageTable = {
+                victim = target,
+                attacker = caster,
+                damage = keydamage,
+                damage_type = DAMAGE_TYPE_PURE,
+            }
+        ApplyDamage(damageTable)
+       
+    EmitSoundOn("Item.Maelstrom.Chain_Lightning",target)
+
+    end
+
+end
+
+function Upgrade(keys)
+  local caster = keys.caster
+    local ability = keys.ability
+    
+    if caster:GetUnitName()=="Troll Priest" then
+        
+         caster:RemoveAbility("invoker_alacrity_datadriven")
+        caster:AddAbility("invoker_alacrity_datadriven_tier2")
+
+    
+    elseif caster:GetUnitName()=="Slayer" then
+        --stuff
+        caster:RemoveModifierByName("modifier_item_monkey_king_bar_datadriven")
+         caster:RemoveAbility("true_strike_datadriven")
+        caster:AddAbility( "true_strike_datadriven_tier2")
+   
+    elseif caster:GetUnitName()=="Troll Duplicator" then
+        caster:RemoveModifierByName( "modifier_conjure_image") 
+         caster:RemoveModifierByName( "modifier_weak_intellect_multiplier_datadriven")
+          caster:RemoveAbility("weak_intellect_multiplier")
+            caster:AddAbility("medium_intellect_multiplier")
+            
+    elseif caster:GetUnitName()=="Ghost" then
+        caster:RemoveModifierByName("modifier_great_cleave_datadriven")
+         caster:RemoveAbility("shrapnel_splash_datadriven")
+         caster:AddAbility("shrapnel_splash_datadriven_tier2")  
+    elseif caster:GetUnitName()=="Juggernaut" then
+          caster:RemoveModifierByName("modifier_great_cleave_datadriven")
+        caster:RemoveAbility("sven_great_cleave_datadriven")
+        caster:AddAbility("sven_great_cleave_datadriven_tier2")  
+    elseif caster:GetUnitName()=="Centaur Chief" then
+
+        caster:AddAbility("attack_speed_aura_datadriven_tier2")  
+     elseif caster:GetUnitName()=="Frost Wyrm" then
+        caster:RemoveModifierByName("modifier_frost_arrows_caster_datadriven")
+        caster:RemoveAbility("drow_ranger_frost_arrows_datadriven")
+        caster:AddAbility("drow_ranger_frost_arrows_datadriven_tier2") 
+
+     elseif caster:GetUnitName()=="Zealot" then
+          caster:RemoveModifierByName( "modifier_coup_de_grace_datadriven")
+        caster:RemoveAbility( "critical_strike_datadriven")
+        caster:AddAbility( "critical_strike_datadriven_tier2") 
+    elseif caster:GetUnitName()=="Toxic Slinger" then
+          caster:RemoveModifierByName("modifier_poison_sting_datadriven")
+          caster:RemoveAbility( "venomancer_poison_sting_datadriven")
+        caster:AddAbility( "venomancer_poison_sting_datadriven_tier2") 
+
+   elseif caster:GetUnitName()=="Teddy" then
+
+        caster:AddAbility( "armor_aura_datadriven_tier2") 
+
+         elseif caster:GetUnitName()=="Fire Beast" then
+             caster:RemoveModifierByName("immolation")
+          caster:RemoveAbility("immolation")
+
+        caster:AddAbility( "immolation_tier2")
+
+
+   elseif caster:GetUnitName()=="Water Elemental" then
+
+        caster:AddAbility("omniknight_degen_aura_datadriven_tier2") 
+
+   elseif caster:GetUnitName()=="Spellbreaker" then
+   
+          caster:RemoveAbility( "mirana_starfall_datadriven")
+        caster:AddAbility("mirana_starfall_datadriven_tier2") 
+
+   elseif caster:GetUnitName()=="Normal Knight" then
+    
+          caster:RemoveAbility( "lone_druid_rabid_datadriven")
+        caster:AddAbility( "lone_druid_rabid_datadriven_tier2") 
+
+   elseif caster:GetUnitName()=="Marine" then
+      caster:RemoveModifierByName(  "modifier_weak_agility_multiplier_datadriven")
+          caster:RemoveAbility( "weak_agility_multiplier")
+        caster:AddAbility("medium_agility_multiplier") 
+  elseif caster:GetUnitName()=="Revenant" then
+    
+          caster:RemoveModifierByName("modifier_lightning_strike_caster_datadriven")
+          caster:RemoveAbility("lightning_strike")
+        caster:AddAbility( "lightning_strike_tier2") 
+
+  elseif caster:GetUnitName()=="Avatar" then
+    
+          caster:RemoveAbility(   "sven_storm_bolt_datadriven")
+        caster:AddAbility(  "sven_storm_bolt_datadriven_tier2") 
+
+  elseif caster:GetUnitName()=="Hunter" then
+      caster:RemoveModifierByName( "modifier_frostmourne")
+          caster:RemoveAbility( "abaddon_frostmourne_datadriven")
+        caster:AddAbility("abaddon_frostmourne_datadriven_tier2") 
+
+  elseif caster:GetUnitName()=="Aloof Giant" then
+      caster:RemoveModifierByName(   "modifier_flatten_datadriven")
+          caster:RemoveAbility( "flatten")
+        caster:AddAbility("flatten_tier2") 
+    
+     elseif caster:GetUnitName()=="Naga" then
+          caster:RemoveModifierByName( "modifier_mana_break_orb_datadriven")
+          caster:RemoveAbility(  "antimage_mana_break_datadriven")
+        caster:AddAbility( "antimage_mana_break_datadriven_tier2") 
+    elseif caster:GetUnitName()=="Succubus" then
+          caster:RemoveModifierByName(  "modifier_corruption")
+          caster:RemoveAbility(  "corruption")
+        caster:AddAbility( "corruption_tier2") 
+
+         
+    
+    end
+       for i=0,15 do
+            local ability = caster:GetAbilityByIndex(i)
+            if ability then
+                ability:SetLevel(ability:GetMaxLevel())
+            end
+        end
+      caster:RemoveAbility(ability:GetAbilityName())
+    caster:SetModelScale(caster:GetModelScale()*1.3)
+end
+--[[Author: Pizzalol
+    Date: 26.01.2015.
+    Saves the killer of the aura carrier]]
+function CommandAuraDeath( keys )
+    local caster = keys.caster
+    local attacker = keys.attacker
+
+    caster.command_aura_target = attacker
+end
+
+--[[Author: Pizzalol
+    Date: 26.01.2015.
+    Removes the negative aura from the killer on caster respawn]]
+function CommandAuraRespawn( keys )
+    local caster = keys.caster
+    local modifier = keys.modifier
+
+    caster.command_aura_target:RemoveModifierByName(modifier)
+end
+
+
+--[[
+    Author: Ractidous
+    Date: 29.01.2015.
+    Deal damage to the egg.
+]]
+function OnAttackedEgg( event )
+    local egg           = event.target
+    local attacker      = event.attacker
+    local maxAttacks    = event.max_hero_attacks
+
+ 
+
+    local numAttacked = egg.supernova_numAttacked or 0
+    numAttacked = numAttacked + 1
+    egg.supernova_numAttacked = numAttacked
+
+    local health = 100 * ( maxAttacks - numAttacked ) / maxAttacks
+    egg:SetHealth( health )
+
+    if numAttacked >= maxAttacks then
+        -- Now the egg has been killed.
+        egg.supernova_lastAttacker = attacker
+        event.caster:RemoveModifierByName( "modifier_supernova_sun_form_caster_datadriven" )
+        egg:RemoveModifierByName( "modifier_supernova_sun_form_egg_datadriven" )
+    end
+end
+
+--[[
+    Author: Ractidous
+    Date: 29.01.2015.
+    Kill the bird if the egg has been killed; Refresh him and stun around enemies otherwise.
+]]
+function OnDestroyEgg( event )
+    local egg       = event.target
+    local hero      = event.caster
+    local ability   = event.ability
+
+    local isDead = egg:GetHealth() == 0
+
+    if isDead then
+
+        hero:Kill( ability, egg.supernova_lastAttacker )
+
+    else
+
+        hero:SetHealth( hero:GetMaxHealth() )
+        hero:SetMana( hero:GetMaxMana() )
+
+        -- Strong despel
+        local RemovePositiveBuffs = true
+        local RemoveDebuffs = true
+        local BuffsCreatedThisFrameOnly = false
+        local RemoveStuns = true
+        local RemoveExceptions = true
+        hero:Purge( RemovePositiveBuffs, RemoveDebuffs, BuffsCreatedThisFrameOnly, RemoveStuns, RemoveExceptions )
+
+        -- Stun nearby enemies
+        ability:ApplyDataDrivenModifier( hero, egg, "modifier_supernova_egg_explode_datadriven", {} )
+        hero:RemoveModifierByName( "modifier_supernova_egg_explode_datadriven" )
+
+    end
+
+    -- Play sound effect
+    local soundName = "Hero_Phoenix.SuperNova." .. ( isDead and "Death" or "Explode" )
+    StartSoundEvent( soundName, hero )
+
+    -- Create particle effect
+    local pfxName = "particles/units/heroes/hero_phoenix/phoenix_supernova_" .. ( isDead and "death" or "reborn" ) .. ".vpcf"
+    local pfx = ParticleManager:CreateParticle( pfxName, PATTACH_ABSORIGIN, egg )
+    ParticleManager:SetParticleControlEnt( pfx, 0, egg, PATTACH_POINT_FOLLOW, "follow_origin", egg:GetAbsOrigin(), true )
+    ParticleManager:SetParticleControlEnt( pfx, 1, egg, PATTACH_POINT_FOLLOW, "attach_hitloc", egg:GetAbsOrigin(), true )
+
+    -- Remove the egg
+    egg:ForceKill( false )
+    egg:AddNoDraw()
+end
+
+
+--[[
+    Author: Ractidous
+    Date: 29.01.2015.
+    Hide caster's model.
+]]
+function HideCaster( event )
+    event.caster:AddNoDraw()
+end
+
+--[[
+    Author: Ractidous
+    Date: 29.01.2015.
+    Show caster's model.
+]]
+
+--[[
+"Troll Priest" S
+"Slayer" I
+"Naga"   A
+ "Troll Duplicator" A
+  "Ghost" S
+"Juggernaut" S
+"Centaur Chief" S
+"Frost Wyrm" A
+"Zealot" A
+"Toxic Slinger" I
+"Teddy"S 
+"Water Elemental" I
+"Fire Beast" A
+"Spellbreaker" I
+ "Normal Knight" S
+"Marine" I
+"Revenant" I
+ "Avatar" S
+"Hunter" A
+"Aloof Giant" A
+7S 6I 7A
+--]]
+
+--jugg/ghost 
+--dupe/zealot/fire/
+--toxic/spell

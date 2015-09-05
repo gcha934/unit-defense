@@ -3,7 +3,7 @@
 
   -- Set this to true if you want to see a complete debug output of all events/processes done by barebones
   -- You can also change the cvar 'barebones_spew' at any time to 1 or 0 for output/no output
-  BAREBONES_DEBUG_SPEW = true
+  BAREBONES_DEBUG_SPEW = false
 
   if GameMode == nil then
     DebugPrint( '[BAREBONES] creating barebones game mode' )
@@ -18,14 +18,23 @@ START_DELAY=3
 ROUND=1
 OFFSET=0
 MESSAGE_TIMER=0
+
+
 players= {}
+str={}
+agi={}
+int={}
+units={}
+
 FIRST_ROUND=true
-MAX_CREEPS=60
+MAX_CREEPS=59
 pregame=true
 BOSS_SPAWN_CHECK=false
+UnitCounter=nil
+UnitCounter1=nil
+UnitCounter2=nil
+UnitCounter3=nil
 
--- Place holder till they fix the playername function
-aux_vector = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6"}
 
 
 
@@ -50,6 +59,11 @@ aux_vector = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Playe
   require('events')
   require('abilities')
   require('popups')
+
+  -- [SCOREBOARD] requirements
+require('players')
+require('libraries/scoreboard')
+
   function GameMode:OnPlayerPickHero(keys)
     DebugPrint('[BAREBONES] OnPlayerPickHero')
     DebugPrintTable(keys)
@@ -57,6 +71,7 @@ aux_vector = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Playe
     local heroClass = keys.hero
     local hero = EntIndexToHScript(keys.heroindex)
     local player = EntIndexToHScript(keys.player)
+
     local playerID = hero:GetPlayerID()
   -- Set this player's health bar color
   local teamID = PlayerResource:GetTeam( playerID )
@@ -69,20 +84,36 @@ aux_vector = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Playe
 
     hero:SetOrigin(originp1)
     hero:SetRespawnsDisabled(true)
-    hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+ 
   elseif playerID==1 then
    hero:SetRespawnsDisabled(true)
    hero:SetOrigin(originp2)
-   hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+   
  elseif playerID==2 then
   hero:SetRespawnsDisabled(true)
   hero:SetOrigin(originp3)
-  hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+
 elseif playerID==3 then
   hero:SetRespawnsDisabled(true)
   hero:SetOrigin(originp4)
-  hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+  
 end
+hero:AddNewModifier(hero,nil, "modifier_rooted", {duration = 999999})
+
+units[playerID]=0;
+str[playerID]=0
+int[playerID]=0
+agi[playerID]=0
+
+ 
+
+local event_data =
+{
+    key1 = "value2",
+    key2 = "value2",
+}
+CustomGameEventManager:Send_ServerToAllClients( "my_event_name", event_data )
+
 
 
 end
@@ -161,9 +192,17 @@ end
     is useful for starting any game logic timers/thinkers, beginning the first round, etc.
     ]]
     function GameMode:OnGameInProgress()
+
       OFFSET=GameRules:GetGameTime()
-      --initialise unit counter display
-      
+        SetupBoard()
+    CreateColumnHeaders()
+      for i=0,3 do
+        if players[i] ~= nil then
+          
+         setupScoreboard(i)
+       end
+       end
+    --initialise unit counter display
 
 
       --since game time with 0:00
@@ -177,12 +216,47 @@ end
 
 
       function start()
+        for nPlayerID = 0, (DOTA_MAX_TEAM_PLAYERS-1) do
+    MakeLabelForPlayer( nPlayerID )
+  end
+
         Instructions()
         SpawnCreeps()
 
 
 
       end
+
+function ColorForTeam( teamID )
+  local color = GameMode.m_TeamColors[ teamID ]
+  if color == nil then
+    color = { 255, 255, 255 } -- default to white
+  end
+  return color
+end
+---------------------------------------------------------------------------
+-- Put a label over a player's hero so people know who is on what team
+---------------------------------------------------------------------------
+function MakeLabelForPlayer( nPlayerID )
+  if not PlayerResource:HasSelectedHero( nPlayerID) then
+    return
+  end
+
+  local hero = PlayerResource:GetSelectedHeroEntity( nPlayerID)
+  if hero == nil then
+    return
+  end
+
+  local color = ColorForTeam( nPlayerID+1)
+  PlayerResource:SetCustomTeamAssignment(nPlayerID,DOTA_TEAM_GOODGUYS)
+  hero:SetCustomHealthLabel( PlayerResource:GetPlayerName(nPlayerID), color[1], color[2], color[3])
+  PlayerResource:SetCustomPlayerColor(nPlayerID,color[1],color[2],color[3])
+end
+
+
+
+
+
       function SpawnCreeps()
 
 
@@ -193,12 +267,12 @@ end
   if  GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
     --roundinfo display
     if FIRST_ROUND==true then
-     Timers:CreateTimer(function()
+
+   
+      
        GameRules:SendCustomMessage("         Wave ".. ColorIt(ROUND,"red") .. " start", 0, 0)
        FIRST_ROUND=false
-       return SPAWN_TIMER+DOWNTIME
-     end
-     )
+
    end
    if GameRules:GetGameTime()>= OFFSET then
      --info on creep spawn specific stuff
@@ -206,8 +280,10 @@ end
       --this should hold the time at the END of the downtime
       if GameRules:GetGameTime()>OFFSET+SPAWN_TIMER then
         ROUND=ROUND+1
+           GameRules:SendCustomMessage("         Wave ".. ColorIt(ROUND,"red") .. " start", 0, 0)
         OFFSET=GameRules:GetGameTime()+DOWNTIME
-        return 1.0
+        SPAWN_TIMER=45
+        return 1.5
       end
       if BOSS_SPAWN_CHECK==false then
         CreepSpawnLocation()
@@ -215,13 +291,12 @@ end
       
     end
    
-    UnitCount()
+    
+
   end
- --print(OFFSET,"offset")
-     --print(OFFSET+SPAWN_TIMER,"offset+SPAWN_TIMER")
-      --print(BOSS_SPAWN_CHECK,"boss spawn check")
+ 
 
-
+      UnitCount()
 
 
   
@@ -236,28 +311,90 @@ function RoundInformation()
 
 
   if ROUND == 1 then
-    UNIT_NAME="sheep"
+    UNIT_NAME="Sheep"
   elseif ROUND ==2 then
-    UNIT_NAME="wolfcub"
+    UNIT_NAME="Wolfcub"
   elseif ROUND ==3 then
-    UNIT_NAME="black drake"
+    UNIT_NAME="Black Drake"
   elseif ROUND ==4 then
-    UNIT_NAME="spiderling"
+    UNIT_NAME="Spiderling"
   elseif ROUND ==5 then
-    UNIT_NAME="skeleton"
+    UNIT_NAME="Skeleton"
   elseif ROUND ==6 then
-    UNIT_NAME="zombie"
+    UNIT_NAME="Zombie"
   elseif ROUND ==7 then
-    UNIT_NAME="crab"
+    UNIT_NAME="Crab"
   elseif ROUND ==8 then
-    UNIT_NAME="drodo"
+    UNIT_NAME="Drodo"
   elseif ROUND ==9 then
-    UNIT_NAME="razorback"
+    UNIT_NAME="Razorback"
   elseif ROUND ==10 then
-    UNIT_NAME= "boss_puck"
+    UNIT_NAME= "Boss_Puck"
   elseif ROUND ==11 then
-    UNIT_NAME= "sheep"    
+    UNIT_NAME= "Wild Beast"    
     BOSS_SPAWN_CHECK=false
+  elseif ROUND ==12 then
+    UNIT_NAME= "Gargoyle"
+  elseif ROUND ==13 then
+    UNIT_NAME="Blue Thunder"
+  elseif ROUND ==14 then
+    UNIT_NAME=  "Green Wyvern"
+  elseif ROUND ==15 then
+    UNIT_NAME=  "Flamewalker"
+   elseif ROUND ==16 then
+    UNIT_NAME=  "Old Grizzly" 
+   elseif ROUND ==17 then
+    UNIT_NAME= "Kodos"
+   elseif ROUND ==18 then
+    UNIT_NAME= "Armored Beetle"
+   elseif ROUND ==19 then
+    UNIT_NAME=  "Infernal"
+   elseif ROUND ==20 then
+    UNIT_NAME= "Boss_Iron_Bear"
+   elseif ROUND ==21 then
+    UNIT_NAME= "Calamity"
+    BOSS_SPAWN_CHECK=false
+    elseif ROUND ==22 then
+    UNIT_NAME= "Machine Golem"
+    elseif ROUND ==23 then
+    UNIT_NAME= "The Corrupted"
+    elseif ROUND ==24 then
+    UNIT_NAME= "Vile Shrooms"
+    elseif ROUND ==25 then
+    UNIT_NAME= "Vaal"
+    elseif ROUND ==26 then
+    UNIT_NAME= "Headless Magus"
+    elseif ROUND ==27 then
+    UNIT_NAME= "Golden Sheep"
+    elseif ROUND ==28 then
+    UNIT_NAME= "Carty"
+    elseif ROUND ==29 then
+    UNIT_NAME= "Grand Eagle"
+    elseif ROUND ==30 then
+    UNIT_NAME= "Boss_Defiler"
+     elseif ROUND ==31 then
+    UNIT_NAME= "Armored Turtle"
+      BOSS_SPAWN_CHECK=false
+       elseif ROUND ==32 then
+    UNIT_NAME= "Wraith"
+     elseif ROUND ==33 then
+    UNIT_NAME= "Obsidian Golem"
+     elseif ROUND ==34 then
+    UNIT_NAME= "Kobold Runner"
+     elseif ROUND ==35 then
+    UNIT_NAME= "The Undying"
+     elseif ROUND ==36 then
+    UNIT_NAME= "Spitting Lizard"
+     elseif ROUND ==37 then
+    UNIT_NAME= "Smeevil Bird"
+     elseif ROUND ==38 then
+    UNIT_NAME= "NightCrawler"
+     elseif ROUND ==39 then
+    UNIT_NAME= "Purgatory Demon"
+     elseif ROUND ==40 then
+    UNIT_NAME= "Boss_Phoenix"
+
+
   end
 end
 
@@ -265,8 +402,8 @@ function CreepSpawnLocation()
 
   if players[0]~=nil then
     local point = Entities:FindByName( nil, "spawner"):GetAbsOrigin()     
-    local start = Entities:FindByName( nil, "pos1")
-         --have to replace sheep with UNIT_NAME later
+    local start = Entities:FindByName( nil, "pos4")
+       
          local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
          unit:SetInitialGoalEntity(start)
          unit:SetMustReachEachGoalEntity(true)
@@ -274,8 +411,8 @@ function CreepSpawnLocation()
 
        if players[1]~=nil then
         local point = Entities:FindByName( nil, "spawner1"):GetAbsOrigin()     
-        local start = Entities:FindByName( nil, "2pos1")
-         --have to replace sheep with UNIT_NAME later
+        local start = Entities:FindByName( nil, "2pos4")
+     
          local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
          unit:SetInitialGoalEntity(start)
          unit:SetMustReachEachGoalEntity(true)
@@ -283,8 +420,8 @@ function CreepSpawnLocation()
 
        if players[2]~=nil then
         local point = Entities:FindByName( nil, "spawner2"):GetAbsOrigin()     
-        local start = Entities:FindByName( nil, "3pos1")
-         --have to replace sheep with UNIT_NAME later
+        local start = Entities:FindByName( nil, "3pos4")
+    
          local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
          unit:SetInitialGoalEntity(start)
          unit:SetMustReachEachGoalEntity(true)
@@ -292,8 +429,8 @@ function CreepSpawnLocation()
 
        if players[3]~=nil then
         local point = Entities:FindByName( nil, "spawner3"):GetAbsOrigin()     
-        local start = Entities:FindByName( nil, "4pos1")
-         --have to replace sheep with UNIT_NAME later
+        local start = Entities:FindByName( nil, "4pos4")
+     
          local unit = CreateUnitByName(UNIT_NAME, point, true, nil, nil, DOTA_TEAM_BADGUYS)
          unit:SetInitialGoalEntity(start)
          unit:SetMustReachEachGoalEntity(true)
@@ -301,8 +438,79 @@ function CreepSpawnLocation()
 
        if ROUND%10==0 then
         BOSS_SPAWN_CHECK=true
+        SPAWN_TIMER=60
+        countdown()
+     
       end
      
+
+    end
+
+    function countdown()
+Timers:CreateTimer(1, function()
+      ShowBossMessage(  "BOSS TIME!", 3 )
+
+     end
+     )
+
+
+Timers:CreateTimer(7, function()
+      ShowBossMessage(  "50", 5 )
+
+     end
+     )
+Timers:CreateTimer(17, function()
+      ShowBossMessage(  "40", 5 )
+
+     end
+     )
+
+Timers:CreateTimer(27, function()
+      ShowBossMessage(  "30", 5 )
+
+     end
+     )
+Timers:CreateTimer(37, function()
+      ShowBossMessage("20", 5 )
+
+     end
+     )
+Timers:CreateTimer(47, function()
+      ShowBossMessage(  "10", 5 )
+
+     end
+     )
+
+Timers:CreateTimer(52, function()
+      ShowBossMessage(  "5..", 1 )
+
+     end
+     )
+
+
+Timers:CreateTimer(53, function()
+      ShowBossMessage(  "4..", 1 )
+
+     end
+     )
+Timers:CreateTimer(54, function()
+      ShowBossMessage(  "3..", 1 )
+
+     end
+     )
+Timers:CreateTimer(55, function()
+      ShowBossMessage( "2..", 1 )
+
+     end
+     )
+Timers:CreateTimer(56, function()
+      ShowBossMessage(  "1..", 1 )
+
+     end
+     )
+
+
+
 
     end
 
@@ -311,7 +519,7 @@ function CreepSpawnLocation()
   -- make this player specific later and vector specific somehow
   --need to check if this counter includes playerowned units
   if players[0]~=nil then
-    local UnitCounter = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+     UnitCounter = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
       originp1,
       nil,
       2500,
@@ -321,7 +529,7 @@ function CreepSpawnLocation()
       0,
       false)
 
-    if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and UnitCounter~=nil then
+    if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and #UnitCounter~=0 then
          local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
           originp1,
           nil,
@@ -358,7 +566,7 @@ function CreepSpawnLocation()
       end
     end
     if players[1]~=nil then
-      local UnitCounter = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+    UnitCounter1 = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
         originp2,
         nil,
         2500,
@@ -367,7 +575,7 @@ function CreepSpawnLocation()
         0,
         0,
         false)
-          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and UnitCounter1~=nil then
+          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and #UnitCounter1~=0 then
          local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
           originp2,
           nil,
@@ -380,7 +588,7 @@ function CreepSpawnLocation()
         for k,v in pairs(UnitKill) do
           v:ForceKill(false)
         end
-        players[0]=nil
+        players[1]=nil
     
     end
       if #UnitCounter1>MAX_CREEPS then
@@ -402,7 +610,7 @@ function CreepSpawnLocation()
     end
 
     if players[2]~=nil then
-      local UnitCounter2 = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+     UnitCounter2 = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
         originp3,
         nil,
         2500,
@@ -412,7 +620,7 @@ function CreepSpawnLocation()
         0,
         false)
       
-          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and UnitCounter2~=nil then
+          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and #UnitCounter2~=0 then
          local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
           originp3,
           nil,
@@ -425,7 +633,7 @@ function CreepSpawnLocation()
         for k,v in pairs(UnitKill) do
           v:ForceKill(false)
         end
-        players[0]=nil
+        players[2]=nil
       end
     
 
@@ -449,7 +657,7 @@ function CreepSpawnLocation()
       end
     end
     if players[3]~=nil then
-      local UnitCounter3 = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
+     UnitCounter3 = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
         originp4,
         nil,
         2500,
@@ -460,7 +668,7 @@ function CreepSpawnLocation()
         false)
       
 
-          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and UnitCounter3~=nil then
+          if ( ROUND%10==0 and  GameRules:GetGameTime()>= OFFSET+SPAWN_TIMER-2) and #UnitCounter3~=0 then
          local UnitKill = FindUnitsInRadius(DOTA_TEAM_GOODGUYS,
           originp4,
           nil,
@@ -473,7 +681,7 @@ function CreepSpawnLocation()
         for k,v in pairs(UnitKill) do
           v:ForceKill(false)
         end
-        players[0]=nil
+        players[3]=nil
       end
     
 
@@ -496,18 +704,29 @@ function CreepSpawnLocation()
 
     end
 
-
+if(GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS) then
     if players[0]==nil and players[1]==nil and players[2] == nil and players[3] ==nil then
       Timers:CreateTimer(3, function()
         ancient=Entities:FindByName(nil, "dota_goodguys_fort")
         ancient:ForceKill(false);
       end
       )
-
-
     end
-  end
+end
+if(GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS and ROUND ==41) then
 
+  
+      
+      Timers:CreateTimer(3, function()
+       GameRules:SetGameWinner(DOTA_TEAM_GOODGUYS)
+      GameRules:SetCustomVictoryMessage("Congratulations!")
+  
+      end
+      )
+
+  
+  end
+end
 
 --message and color settings
 function ShowBossMessage( msg, dur )
@@ -524,7 +743,7 @@ end
   -- This function initializes the game mode and is called before anyone loads into the game
   -- It can be used to pre-initialize any values/tables that will be needed later
   function GameMode:InitGameMode()
-    GameMode = self
+   
     DebugPrint('[BAREBONES] Starting to load Barebones gamemode...')
 
     -- Call the internal function to set up the rules/behaviors specified in constants.lua
@@ -535,10 +754,17 @@ end
     originp2=Entities:FindByName(nil,"originp2"):GetAbsOrigin()
     originp3=Entities:FindByName(nil,"originp3"):GetAbsOrigin()
     originp4=Entities:FindByName(nil,"originp4"):GetAbsOrigin()
+    GameMode.m_TeamColors = {}
+  GameMode.m_TeamColors[1] = { 255, 0, 0 }
+  GameMode.m_TeamColors[2] = { 0, 255, 0 }
+  GameMode.m_TeamColors[3] = { 0, 0, 255 }
+  GameMode.m_TeamColors[4] = { 255, 128, 64 }
     -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
     Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
-    GameRules:GetGameModeEntity():SetDamageFilter(Dynamic_Wrap(GameMode,"FilterDamage"),self)
-    SendToServerConsole("r_farz 7000")
+    GameRules:GetGameModeEntity():SetDamageFilter(Dynamic_Wrap(GameMode,"FilterDamage"),GameMode)
+ 
+   SendToConsole("dota_camera_disable_zoom 1")
+   GameRules:SetPostGameTime(60)
     Timers:CreateTimer(function()
      start()
      return 1.5
@@ -553,18 +779,42 @@ end
   function  Instructions()
     if  GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME and pregame==true then
       -- A timer running every second that starts 5 seconds in the future, respects pauses
-      Timers:CreateTimer(5, function()
-       GameRules:SendCustomMessage(ColorIt("Creep start spawning at 00:00","red") , 0, 0)
+        Timers:CreateTimer(2, function()
+       GameRules:SendCustomMessage(ColorIt("Use the 4th skill to buy units","blue") , 0, 0)
+
+     end
+     )    Timers:CreateTimer(2, function()
+       GameRules:SendCustomMessage(ColorIt("Units that you spawn are completely random","blue") , 0, 0)
 
      end
      )
-      Timers:CreateTimer(10, function()
-       GameRules:SendCustomMessage(ColorIt("Boss spawns every 10 rounds","purple") , 0, 0)
+
+
+
+               Timers:CreateTimer(10, function()
+       GameRules:SendCustomMessage(ColorIt("First 3 skills upgrades the damage of your units","blue") , 0, 0)
+
+     end
+     )
+
+
+      Timers:CreateTimer(15, function()
+       GameRules:SendCustomMessage(ColorIt("You lose if your creep counter reaches ".. MAX_CREEPS+1,"red") , 0, 0)
 
      end
      )
       Timers:CreateTimer(20, function()
-       GameRules:SendCustomMessage(ColorIt("Good Luck!","red") , 0, 0)
+       GameRules:SendCustomMessage(ColorIt("Boss spawns every 10 rounds","purple") , 0, 0)
+
+     end
+     )
+      Timers:CreateTimer(25, function()
+       GameRules:SendCustomMessage(ColorIt("You must clear all units by the end of the boss wave","red") , 0, 0)
+
+     end
+     )
+        Timers:CreateTimer(30, function()
+       GameRules:SendCustomMessage(ColorIt("good luck","red") , 0, 0)
 
      end
      )

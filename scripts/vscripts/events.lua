@@ -237,6 +237,21 @@ function GameMode:OnEntityKilled( keys )
 
   -- Put code here to handle when an entity gets killed
 
+  if killedUnit:GetUnitName()=="Headless Magus" then
+ 
+     local particleName = "particles/econ/courier/courier_cluckles/courier_cluckles_ambient_death.vpcf"
+        local particle = ParticleManager:CreateParticle(particleName, PATTACH_ABSORIGIN, killedUnit )
+      killedUnit:AddNoDraw()
+    end
+
+ if killedUnit:GetUnitName()=="Green Wyvern" then
+ 
+     local particleName = "particles/econ/items/phantom_assassin/phantom_assassin_arcana_elder_smith/pa_arcana_death_lines.vpcf"
+        local particle = ParticleManager:CreateParticle(particleName, PATTACH_ABSORIGIN, killedUnit )
+       killedUnit:AddNoDraw()
+    end
+
+
   local kill_alert =
           {
             hero_id = killerEntity:GetClassname()
